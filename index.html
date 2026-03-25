@@ -602,6 +602,16 @@ is not needing one at all.</p>
         }
 
         /**
+         * End copy feedback immediately.
+         *
+         * @returns {void}
+         */
+        function clearCopyFeedback() {
+          window.clearTimeout(copyFeedbackTimeoutId);
+          copyButton.classList.remove("is-feedback-success", "is-feedback-error");
+        }
+
+        /**
          * Show a brief pulse on the editor after a successful copy.
          *
          * @returns {void}
@@ -767,6 +777,10 @@ is not needing one at all.</p>
           } catch {
             showCopyFeedback(false);
           }
+        });
+
+        copyButton.addEventListener("mouseleave", () => {
+          clearCopyFeedback();
         });
 
         saveButton.addEventListener("click", () => {
