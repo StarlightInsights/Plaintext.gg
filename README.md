@@ -15,10 +15,10 @@ Sometimes you just want plain text.
 
 ## Project Structure
 
-- [index.html](/Users/carlsson/.codex/worktrees/bf43/Plaintext.gg/index.html): the entire app
-- [fonts](/Users/carlsson/.codex/worktrees/bf43/Plaintext.gg/fonts): self-hosted Commit Mono font assets
-- [favicon.ico](/Users/carlsson/.codex/worktrees/bf43/Plaintext.gg/favicon.ico): site icon
-- [OFL.txt](/Users/carlsson/.codex/worktrees/bf43/Plaintext.gg/OFL.txt): Commit Mono font license
+- [index.html](./index.html): the entire app
+- [fonts](./fonts): self-hosted Commit Mono font assets
+- [favicon.ico](./favicon.ico): site icon
+- [OFL.txt](./OFL.txt): Commit Mono font license
 
 ## Local Development
 
@@ -29,7 +29,8 @@ Open it with a local static server instead of `file://` so fonts, favicon, and b
 Example:
 
 ```sh
-cd /Users/carlsson/.codex/worktrees/bf43/Plaintext.gg
+git clone https://github.com/StarlightInsights/Plaintext.gg.git
+cd Plaintext.gg
 python3 -m http.server 8123
 ```
 
@@ -76,5 +77,5 @@ If you make changes, keep the product intent intact: minimal UI, plain text firs
 
 ## Licenses
 
-- Project license: see [LICENSE](/Users/carlsson/.codex/worktrees/bf43/Plaintext.gg/LICENSE)
-- Font license: see [OFL.txt](/Users/carlsson/.codex/worktrees/bf43/Plaintext.gg/OFL.txt)
+- Project license: see [LICENSE](./LICENSE)
+- Font license: see [OFL.txt](./OFL.txt)
