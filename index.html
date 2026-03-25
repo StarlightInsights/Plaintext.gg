@@ -46,6 +46,7 @@
         --text-primary: oklch(0.2178 0 89.88);
         --text-secondary: oklch(0.683 0 89.88);
         --text-placeholder: oklch(0.8452 0 89.88);
+        --feedback-error: oklch(0.58 0.18 23);
         --overlay: oklch(0 0 0 / 0.4);
         --ui-transition: 180ms ease;
       }
@@ -58,6 +59,7 @@
         --text-primary: oklch(0.9067 0 89.88);
         --text-secondary: oklch(0.5103 0 89.88);
         --text-placeholder: oklch(0.3867 0 89.88);
+        --feedback-error: oklch(0.72 0.17 23);
         --overlay: oklch(0 0 0 / 0.667);
       }
 
@@ -135,12 +137,17 @@
         display: inline-block;
       }
 
-      .control-button.is-feedback {
+      .control-button.is-feedback-success {
         color: var(--text-primary);
       }
 
-      .control-button.is-feedback .control-button-label {
+      .control-button.is-feedback-success .control-button-label,
+      .control-button.is-feedback-error .control-button-label {
         animation: copy-pulse 480ms ease;
+      }
+
+      .control-button.is-feedback-error {
+        color: var(--feedback-error);
       }
 
       .control-button:link,
@@ -362,6 +369,7 @@
             type="button"
             id="font-increase-button"
             data-font-action="increase"
+            aria-label="Increase font size"
           >
             +
           </button>
@@ -370,6 +378,7 @@
             type="button"
             id="font-decrease-button"
             data-font-action="decrease"
+            aria-label="Decrease font size"
           >
             -
           </button>
@@ -579,15 +588,16 @@ is not needing one at all.</p>
         /**
          * Show temporary feedback in the copy button label.
          *
+         * @param {boolean} didSucceed
          * @returns {void}
          */
-        function showCopyFeedback() {
+        function showCopyFeedback(didSucceed) {
           window.clearTimeout(copyFeedbackTimeoutId);
-          copyButton.classList.remove("is-feedback");
+          copyButton.classList.remove("is-feedback-success", "is-feedback-error");
           void copyButton.offsetWidth;
-          copyButton.classList.add("is-feedback");
+          copyButton.classList.add(didSucceed ? "is-feedback-success" : "is-feedback-error");
           copyFeedbackTimeoutId = window.setTimeout(() => {
-            copyButton.classList.remove("is-feedback");
+            copyButton.classList.remove("is-feedback-success", "is-feedback-error");
           }, COPY_FEEDBACK_DURATION_MS);
         }
 
@@ -597,6 +607,10 @@ is not needing one at all.</p>
          * @returns {void}
          */
         function pulseEditorCopyFeedback() {
+          if (!editor.value) {
+            return;
+          }
+
           editor.classList.remove("is-copy-feedback");
           void editor.offsetWidth;
           editor.classList.add("is-copy-feedback");
@@ -633,7 +647,7 @@ is not needing one at all.</p>
          * Copy the editor content as plain text only.
          *
          * @param {string} text
-         * @returns {Promise<void>}
+         * @returns {Promise<boolean>}
          */
         async function copyPlainText(text) {
           if (navigator.clipboard && window.ClipboardItem && navigator.clipboard.write) {
@@ -641,18 +655,22 @@ is not needing one at all.</p>
               "text/plain": new Blob([text], { type: "text/plain" }),
             });
             await navigator.clipboard.write([item]);
-            return;
+            return true;
           }
 
           if (navigator.clipboard && navigator.clipboard.writeText) {
             await navigator.clipboard.writeText(text);
-            return;
+            return true;
           }
 
+          const selectionStart = editor.selectionStart;
+          const selectionEnd = editor.selectionEnd;
+          const selectionDirection = editor.selectionDirection ?? "none";
           editor.focus();
           editor.select();
-          document.execCommand("copy");
-          editor.setSelectionRange(text.length, text.length);
+          const didCopy = document.execCommand("copy");
+          editor.setSelectionRange(selectionStart, selectionEnd, selectionDirection);
+          return didCopy;
         }
 
         /**
@@ -741,11 +759,13 @@ is not needing one at all.</p>
 
         copyButton.addEventListener("click", async () => {
           try {
-            await copyPlainText(editor.value);
-            showCopyFeedback();
-            pulseEditorCopyFeedback();
+            const didCopy = await copyPlainText(editor.value);
+            showCopyFeedback(didCopy);
+            if (didCopy) {
+              pulseEditorCopyFeedback();
+            }
           } catch {
-            showCopyFeedback();
+            showCopyFeedback(false);
           }
         });
 
