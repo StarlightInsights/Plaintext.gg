@@ -579,15 +579,47 @@ is not needing one at all.</p>
          * Update editor font size and persist the clamped value.
          *
          * @param {number} nextFontSize
+         * @param {boolean} [shouldPersist]
          * @returns {void}
          */
-        function updateFontSize(nextFontSize) {
+        function updateFontSize(nextFontSize, shouldPersist = true) {
           const clampedFontSize = clampFontSize(nextFontSize);
           state.fontSize = clampedFontSize;
           editor.style.fontSize = clampedFontSize + "px";
           decreaseFontButton.disabled = clampedFontSize <= MIN_FONT_SIZE;
           increaseFontButton.disabled = clampedFontSize >= MAX_FONT_SIZE;
-          saveStoredValue(STORAGE_KEYS.fontSize, String(clampedFontSize));
+          if (shouldPersist) {
+            saveStoredValue(STORAGE_KEYS.fontSize, String(clampedFontSize));
+          }
+        }
+
+        /**
+         * Update the editor value while preserving the current selection when possible.
+         *
+         * @param {string} nextText
+         * @returns {void}
+         */
+        function updateEditorText(nextText) {
+          if (editor.value === nextText) {
+            state.text = nextText;
+            return;
+          }
+
+          const selectionStart = editor.selectionStart;
+          const selectionEnd = editor.selectionEnd;
+          const selectionDirection = editor.selectionDirection ?? "none";
+          const isFocused = document.activeElement === editor;
+
+          state.text = nextText;
+          editor.value = nextText;
+
+          if (isFocused) {
+            editor.setSelectionRange(
+              Math.min(selectionStart, nextText.length),
+              Math.min(selectionEnd, nextText.length),
+              selectionDirection
+            );
+          }
         }
 
         /**
@@ -735,6 +767,27 @@ is not needing one at all.</p>
         editor.addEventListener("input", () => {
           state.text = editor.value;
           persistText(state.text);
+        });
+
+        window.addEventListener("storage", (event) => {
+          if (event.storageArea !== window.localStorage || !event.key) {
+            return;
+          }
+
+          if (event.key === STORAGE_KEYS.text) {
+            updateEditorText(event.newValue ?? "");
+            return;
+          }
+
+          if (event.key === STORAGE_KEYS.theme) {
+            applyTheme(event.newValue === "dark" ? "dark" : "light");
+            return;
+          }
+
+          if (event.key === STORAGE_KEYS.fontSize) {
+            const nextFontSize = Number(event.newValue);
+            updateFontSize(Number.isFinite(nextFontSize) ? nextFontSize : DEFAULT_FONT_SIZE, false);
+          }
         });
 
         themeButton.addEventListener("click", () => {
