@@ -5,9 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Plaintext.gg</title>
     <style>
+      @font-face {
+        font-family: "CommitMono-300-Regular";
+        src: url("./fonts/CommitMono-300-Regular.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "CommitMono-250-Regular";
+        src: url("./fonts/CommitMono-250-Regular.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "CommitMono-200-Regular";
+        src: url("./fonts/CommitMono-200-Regular.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+
       :root {
-        --font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
-          "Liberation Mono", monospace;
+        --font-family-main: "CommitMono-300-Regular", ui-monospace, "SFMono-Regular", "SF Mono",
+          Menlo, Consolas, "Liberation Mono", monospace;
+        --font-family-header: "CommitMono-250-Regular", ui-monospace, "SFMono-Regular", "SF Mono",
+          Menlo, Consolas, "Liberation Mono", monospace;
+        --font-family-dialog: "CommitMono-200-Regular", ui-monospace, "SFMono-Regular", "SF Mono",
+          Menlo, Consolas, "Liberation Mono", monospace;
+        --font-family-title: "CommitMono-300-Regular", ui-monospace, "SFMono-Regular", "SF Mono",
+          Menlo, Consolas, "Liberation Mono", monospace;
         --bg: oklch(1 0 89.88);
         --panel-bg: oklch(1 0 89.88);
         --border: oklch(0.9219 0 89.88);
@@ -45,7 +75,8 @@
         grid-template-rows: auto 1fr;
         background: var(--bg);
         color: var(--text-primary);
-        font-family: var(--font-family);
+        font-family: var(--font-family-main);
+        font-weight: 400;
       }
 
       button,
@@ -65,6 +96,8 @@
         padding: 0.875rem 1rem;
         border-bottom: 1px solid var(--border);
         background: var(--bg);
+        font-family: var(--font-family-header);
+        font-weight: 400;
       }
 
       .controls {
@@ -74,14 +107,25 @@
         flex-wrap: wrap;
       }
 
+      .font-controls {
+        gap: 0.4rem;
+      }
+
       .control-button {
         appearance: none;
         border: 0;
         background: transparent;
-        color: var(--text-secondary);
+        color: oklch(0.54 0 89.88);
         padding: 0;
         cursor: pointer;
+        text-decoration: none;
         transition: color 120ms ease;
+      }
+
+      .control-button:link,
+      .control-button:visited {
+        color: oklch(0.54 0 89.88);
+        text-decoration: none;
       }
 
       .control-button:hover,
@@ -144,6 +188,7 @@
         margin: 0;
         color: var(--text-primary);
         font-size: 1rem;
+        font-family: var(--font-family-title);
         font-weight: 400;
       }
 
@@ -159,13 +204,33 @@
       .dialog-copy {
         display: grid;
         gap: 1rem;
-        color: var(--text-secondary);
+        color: var(--text-primary);
+        font-family: var(--font-family-dialog);
         line-height: 1.65;
+        font-weight: 400;
       }
 
       .dialog-copy p {
         margin: 0;
         white-space: pre-line;
+      }
+
+      .dialog-copy a,
+      .dialog-copy a:visited {
+        color: oklch(0.54 0 89.88);
+        text-decoration: underline;
+        transition: color 120ms ease;
+      }
+
+      .dialog-copy a:hover,
+      .dialog-copy a:focus-visible {
+        color: var(--text-primary);
+        outline: none;
+      }
+
+      :root[data-theme="dark"] .dialog-copy a,
+      :root[data-theme="dark"] .dialog-copy a:visited {
+        color: var(--text-secondary);
       }
 
       @media (max-width: 640px) {
@@ -191,13 +256,16 @@
   <body>
     <header class="topbar">
       <nav class="controls" aria-label="Info">
+        <a class="control-button" href="./index.html">plaintext.gg</a>
         <button class="control-button" type="button" data-open-dialog="why-dialog">why?</button>
         <button class="control-button" type="button" data-open-dialog="privacy-dialog">privacy</button>
       </nav>
 
       <nav class="controls" aria-label="Editor">
-        <button class="control-button" type="button" data-font-action="increase">+</button>
-        <button class="control-button" type="button" data-font-action="decrease">-</button>
+        <span class="controls font-controls" aria-label="Font size controls">
+          <button class="control-button" type="button" data-font-action="increase">+</button>
+          <button class="control-button" type="button" data-font-action="decrease">-</button>
+        </span>
         <button class="control-button" type="button" id="save-button">save</button>
         <button class="control-button" type="button" id="copy-button">copy</button>
         <button
@@ -216,7 +284,7 @@
         id="editor"
         class="editor"
         aria-label="Plain text editor"
-        placeholder="start typing..."
+        placeholder="just plain text..."
         spellcheck="false"
         autocapitalize="off"
         autocomplete="off"
@@ -257,10 +325,10 @@ nothing is sent to any server. ever.</p>
         <div class="dialog-copy">
           <p>plaintext.gg stores everything in your browser's localStorage.</p>
           <p>no cookies. no analytics. no tracking.
-no accounts. no server. no database.
-your text never leaves your device.</p>
-          <p>the entire site is static HTML, CSS, and JavaScript.
-you can verify this yourself — view source.</p>
+no accounts. no server. no database.</p>
+          <p>your text never leaves your device.</p>
+          <p>the entire site is static HTML, CSS, JavaScript, <span style="white-space: nowrap;">and <a href="https://commitmono.com/" target="_blank" rel="noopener noreferrer">fonts</a>.</span></p>
+          <p>you can verify this yourself — <a href="https://github.com/StarlightInsights/Plaintext.gg" target="_blank" rel="noopener noreferrer">view source</a>.</p>
           <p>we believe the best privacy policy
 is not needing one at all.</p>
         </div>
