@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { asset } from '$app/paths';
+	import { Dialog, Toggle, Toolbar } from 'bits-ui';
 	import { tick } from 'svelte';
 	import {
 		clampFontSize,
@@ -24,7 +25,6 @@
 		writePersistedTextRecord
 	} from '$lib/text-persistence';
 
-	type DialogId = 'why' | 'privacy';
 	type CopyFeedback = 'idle' | 'success' | 'error';
 	type TextSyncMessage = PersistedTextVersion & {
 		type: 'text-updated';
@@ -35,9 +35,8 @@
 	} as const;
 
 	let editor = $state<HTMLTextAreaElement | null>(null);
-	let whyDialog = $state<HTMLDialogElement | null>(null);
-	let privacyDialog = $state<HTMLDialogElement | null>(null);
-	let activeDialog = $state<DialogId | null>(null);
+	let whyDialogOpen = $state(false);
+	let privacyDialogOpen = $state(false);
 	let copyFeedback = $state<CopyFeedback>('idle');
 	let text = $state('');
 	let theme = $state<'light' | 'dark'>('light');
@@ -84,23 +83,6 @@
 		return () => {
 			document.documentElement.style.removeProperty('color-scheme');
 		};
-	});
-
-	$effect(() => {
-		if (whyDialog && activeDialog !== 'why' && whyDialog.open) {
-			whyDialog.close();
-		}
-
-		if (privacyDialog && activeDialog !== 'privacy' && privacyDialog.open) {
-			privacyDialog.close();
-		}
-
-		const dialog =
-			activeDialog === 'why' ? whyDialog : activeDialog === 'privacy' ? privacyDialog : null;
-
-		if (dialog && !dialog.open) {
-			dialog.showModal();
-		}
 	});
 
 	$effect(() => {
@@ -410,14 +392,6 @@
 		editor.classList.add('editor-copy-feedback');
 	}
 
-	function openDialog(dialogId: DialogId): void {
-		activeDialog = dialogId;
-	}
-
-	function closeDialog(): void {
-		activeDialog = null;
-	}
-
 	async function copyPlainText(value: string): Promise<boolean> {
 		if (navigator.clipboard && window.ClipboardItem && navigator.clipboard.write) {
 			const item = new ClipboardItem({
@@ -497,9 +471,13 @@
 		void refreshTextFromPersistence();
 	}
 
-	function toggleTheme(): void {
-		theme = theme === 'light' ? 'dark' : 'light';
+	function setTheme(nextTheme: 'light' | 'dark'): void {
+		theme = nextTheme;
 		saveStoredValue(STORAGE_KEYS.theme, theme);
+	}
+
+	function handleThemePressedChange(pressed: boolean): void {
+		setTheme(pressed ? 'dark' : 'light');
 	}
 
 	function changeFontSize(delta: number): void {
@@ -521,18 +499,6 @@
 
 	function handleSaveClick(): void {
 		downloadPlainTextFile(text);
-	}
-
-	function handleDialogBackdropClick(event: MouseEvent): void {
-		if (event.target === event.currentTarget) {
-			closeDialog();
-		}
-	}
-
-	function handleDialogClosed(dialogId: DialogId): void {
-		if (activeDialog === dialogId) {
-			activeDialog = null;
-		}
 	}
 </script>
 
@@ -579,15 +545,90 @@
 	>
 		<nav class="flex flex-wrap items-center gap-[0.875rem] max-sm:gap-x-3 max-sm:gap-y-[0.35rem]" aria-label="Info">
 			<a class={controlButtonClass} href={homeHref}>plaintext.gg</a>
-			<button class={controlButtonClass} type="button" onclick={() => openDialog('why')}>
-				why?
-			</button>
-			<button class={controlButtonClass} type="button" onclick={() => openDialog('privacy')}>
-				privacy
-			</button>
+			<Dialog.Root bind:open={whyDialogOpen}>
+				<Dialog.Trigger class={controlButtonClass}>why?</Dialog.Trigger>
+				<Dialog.Overlay class="plain-dialog-overlay fixed inset-0 z-20" />
+				<Dialog.Content
+					class="plain-dialog fixed top-1/2 left-1/2 z-30 w-[min(32rem,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0 text-[var(--text-primary)] outline-none transition-[background-color,border-color,color] duration-180 ease-out sm:w-[min(32rem,calc(100vw-2rem))]"
+				>
+					<div class="grid gap-5 p-4">
+						<div class="flex items-start justify-between gap-4">
+							<Dialog.Title
+								level={2}
+								class="m-0 text-base font-normal"
+								style="font-family: var(--font-family-title);"
+							>
+								why plaintext?
+							</Dialog.Title>
+							<Dialog.Close class={dialogButtonClass} aria-label="Close dialog">
+								x
+							</Dialog.Close>
+						</div>
+
+						<Dialog.Description
+							class="dialog-copy grid gap-4 leading-[1.65] text-[var(--text-primary)]"
+							style="font-family: var(--font-family-dialog);"
+						>
+							<p class="m-0">plaintext.gg is a distraction-free writing tool.</p>
+							<p class="m-0">no formatting. no folders. no sync conflicts.</p>
+							<p class="m-0">just open the page and start typing.</p>
+							<p class="m-0">
+								your text is saved locally in your browser. nothing is sent to any
+								server. ever.
+							</p>
+							<p class="m-0">it is the simplest way to write.</p>
+						</Dialog.Description>
+					</div>
+				</Dialog.Content>
+			</Dialog.Root>
+			<Dialog.Root bind:open={privacyDialogOpen}>
+				<Dialog.Trigger class={controlButtonClass}>privacy</Dialog.Trigger>
+				<Dialog.Overlay class="plain-dialog-overlay fixed inset-0 z-20" />
+				<Dialog.Content
+					class="plain-dialog fixed top-1/2 left-1/2 z-30 w-[min(32rem,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0 text-[var(--text-primary)] outline-none transition-[background-color,border-color,color] duration-180 ease-out sm:w-[min(32rem,calc(100vw-2rem))]"
+				>
+					<div class="grid gap-5 p-4">
+						<div class="flex items-start justify-between gap-4">
+							<Dialog.Title
+								level={2}
+								class="m-0 text-base font-normal"
+								style="font-family: var(--font-family-title);"
+							>
+								privacy
+							</Dialog.Title>
+							<Dialog.Close class={dialogButtonClass} aria-label="Close dialog">
+								x
+							</Dialog.Close>
+						</div>
+
+						<Dialog.Description
+							class="dialog-copy grid gap-4 leading-[1.65] text-[var(--text-primary)]"
+							style="font-family: var(--font-family-dialog);"
+						>
+							<p class="m-0">plaintext.gg stores text in your browser&apos;s IndexedDB.</p>
+							<p class="m-0">
+								theme and font size stay in your browser&apos;s localStorage.
+							</p>
+							<p class="m-0">
+								no cookies. no analytics. no tracking. no accounts. no server. no
+								cloud database.
+							</p>
+							<p class="m-0">your text never leaves your device.</p>
+							<p class="m-0">
+								all fonts are bundled locally with the site. the bundled font
+								license is available at
+								<a href={fontLicenseHref}>/OFL.txt</a>.
+							</p>
+							<p class="m-0">
+								we believe the best privacy policy is not needing one at all.
+							</p>
+						</Dialog.Description>
+					</div>
+				</Dialog.Content>
+			</Dialog.Root>
 		</nav>
 
-		<nav
+		<Toolbar.Root
 			class="ml-auto flex flex-wrap items-center gap-[0.875rem] pl-[0.9rem] max-sm:ml-0 max-sm:pl-0 max-sm:gap-x-3 max-sm:gap-y-[0.35rem]"
 			aria-label="Editor"
 		>
@@ -595,55 +636,52 @@
 				class="flex items-center gap-[0.4rem] max-sm:gap-[0.5rem]"
 				aria-label="Font size controls"
 			>
-				<button
+				<Toolbar.Button
 					class={[
 						controlButtonClass,
 						'max-sm:min-h-11 max-sm:min-w-[2.75rem] max-sm:px-[0.2rem] max-sm:py-2'
 					]}
-					type="button"
 					aria-label="Increase font size"
 					disabled={!canIncreaseFont}
 					onclick={() => changeFontSize(FONT_STEP)}
 				>
 					+
-				</button>
-				<button
+				</Toolbar.Button>
+				<Toolbar.Button
 					class={[
 						controlButtonClass,
 						'max-sm:min-h-11 max-sm:min-w-[2.75rem] max-sm:px-[0.2rem] max-sm:py-2'
 					]}
-					type="button"
 					aria-label="Decrease font size"
 					disabled={!canDecreaseFont}
 					onclick={() => changeFontSize(-FONT_STEP)}
 				>
 					-
-				</button>
+				</Toolbar.Button>
 			</span>
 
-			<button class={controlButtonClass} type="button" onclick={handleSaveClick}>save</button>
-			<button
+			<Toolbar.Button class={controlButtonClass} onclick={handleSaveClick}>save</Toolbar.Button>
+			<Toolbar.Button
 				class={[
 					controlButtonClass,
 					copyFeedback === 'success' && 'copy-feedback-success text-[var(--text-primary)]',
 					copyFeedback === 'error' && 'copy-feedback-error text-[var(--feedback-error)]'
 				]}
-				type="button"
 				onclick={handleCopyClick}
 				onmouseleave={clearCopyFeedback}
 			>
 				<span>copy</span>
-			</button>
-			<button
+			</Toolbar.Button>
+			<Toggle.Root
 				class={controlButtonClass}
-				type="button"
+				pressed={theme === 'dark'}
 				aria-label={`Toggle theme. Current theme: ${theme}.`}
-				onclick={toggleTheme}
+				onPressedChange={handleThemePressedChange}
 			>
 				{theme}
-			</button>
-		</nav>
-	</header>
+			</Toggle.Root>
+		</Toolbar.Root>
+		</header>
 
 	<main class="min-h-0">
 		<textarea
@@ -664,76 +702,4 @@
 			oninput={handleInput}
 		></textarea>
 	</main>
-
-	<dialog
-		bind:this={whyDialog}
-		class="plain-dialog w-[min(32rem,calc(100vw-1rem))] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0 text-[var(--text-primary)] transition-[background-color,border-color,color] duration-180 ease-out sm:w-[min(32rem,calc(100vw-2rem))]"
-		aria-labelledby="why-title"
-		onclick={handleDialogBackdropClick}
-		onclose={() => handleDialogClosed('why')}
-	>
-		<div class="grid gap-5 p-4">
-			<div class="flex items-start justify-between gap-4">
-				<h2
-					id="why-title"
-					class="m-0 text-base font-normal"
-					style="font-family: var(--font-family-title);"
-				>
-					why plaintext?
-				</h2>
-				<button class={dialogButtonClass} type="button" aria-label="Close dialog" onclick={closeDialog}>
-					x
-				</button>
-			</div>
-
-			<div
-				class="dialog-copy grid gap-4 leading-[1.65] text-[var(--text-primary)]"
-				style="font-family: var(--font-family-dialog);"
-			>
-				<p class="m-0">plaintext.gg is a distraction-free writing tool.</p>
-				<p class="m-0">no formatting. no folders. no sync conflicts.</p>
-				<p class="m-0">just open the page and start typing.</p>
-				<p class="m-0">your text is saved locally in your browser. nothing is sent to any server. ever.</p>
-				<p class="m-0">it is the simplest way to write.</p>
-			</div>
-		</div>
-	</dialog>
-
-	<dialog
-		bind:this={privacyDialog}
-		class="plain-dialog w-[min(32rem,calc(100vw-1rem))] border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0 text-[var(--text-primary)] transition-[background-color,border-color,color] duration-180 ease-out sm:w-[min(32rem,calc(100vw-2rem))]"
-		aria-labelledby="privacy-title"
-		onclick={handleDialogBackdropClick}
-		onclose={() => handleDialogClosed('privacy')}
-	>
-		<div class="grid gap-5 p-4">
-			<div class="flex items-start justify-between gap-4">
-				<h2
-					id="privacy-title"
-					class="m-0 text-base font-normal"
-					style="font-family: var(--font-family-title);"
-				>
-					privacy
-				</h2>
-				<button class={dialogButtonClass} type="button" aria-label="Close dialog" onclick={closeDialog}>
-					x
-				</button>
-			</div>
-
-			<div
-				class="dialog-copy grid gap-4 leading-[1.65] text-[var(--text-primary)]"
-				style="font-family: var(--font-family-dialog);"
-			>
-				<p class="m-0">plaintext.gg stores text in your browser&apos;s IndexedDB.</p>
-				<p class="m-0">theme and font size stay in your browser&apos;s localStorage.</p>
-				<p class="m-0">no cookies. no analytics. no tracking. no accounts. no server. no cloud database.</p>
-				<p class="m-0">your text never leaves your device.</p>
-				<p class="m-0">
-					all fonts are bundled locally with the site. the bundled font license is available at
-					<a href={fontLicenseHref}>/OFL.txt</a>.
-				</p>
-				<p class="m-0">we believe the best privacy policy is not needing one at all.</p>
-			</div>
-		</div>
-	</dialog>
 </div>

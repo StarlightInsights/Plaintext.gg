@@ -75,15 +75,14 @@ textarea {
 }
 
 .plain-dialog {
-  margin: auto;
   max-height: calc(100dvh - 1rem);
 }
 
-.plain-dialog[open] {
+.plain-dialog[data-state="open"] {
   animation: dialog-in 180ms ease;
 }
 
-.plain-dialog::backdrop {
+.plain-dialog-overlay {
   background: var(--overlay);
   transition: background-color var(--ui-transition);
 }
