@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowJs": false,
     "moduleResolution": "bundler",
+    "skipLibCheck": true,
     "strict": true,
     "types": ["node"],
     "verbatimModuleSyntax": true

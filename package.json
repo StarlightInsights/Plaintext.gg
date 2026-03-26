@@ -16,17 +16,21 @@
     "test": "node --experimental-strip-types --test"
   },
   "devDependencies": {
-    "@voidzero-dev/vite-plus-core": "0.1.14",
-    "@types/node": "25.5.0",
     "@sveltejs/adapter-static": "3.0.10",
     "@sveltejs/kit": "2.55.0",
     "@sveltejs/vite-plugin-svelte": "7.0.0",
     "@tailwindcss/vite": "4.2.2",
+    "@types/node": "25.5.0",
+    "@voidzero-dev/vite-plus-core": "0.1.14",
+    "csstype": "^3.2.3",
     "svelte": "5.55.0",
     "svelte-check": "4.4.5",
     "tailwindcss": "4.2.2",
     "typescript": "5.9.3",
     "vite": "8.0.3",
     "vite-plus": "0.1.14"
+  },
+  "dependencies": {
+    "bits-ui": "^2.16.3"
   }
 }
