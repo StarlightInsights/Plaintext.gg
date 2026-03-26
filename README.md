@@ -15,43 +15,35 @@ Sometimes you just want plain text.
 
 ## Project Structure
 
-- [index.html](./index.html): the entire app
-- [fonts](./fonts): self-hosted Commit Mono font assets
-- [favicon.ico](./favicon.ico): site icon
-- [OFL.txt](./OFL.txt): Commit Mono font license
+- `src/routes/+page.svelte`: the application page
+- `src/lib/editor.js`: small shared editor utilities covered by tests
+- `src/app.css`: Tailwind import plus the app's global styles and local font faces
+- `static/`: static assets served with the site, including the favicon, license file, and the full bundled Commit Mono font family
+- `.github/workflows/ci.yml`: CI for tests and checks
 
 ## Local Development
 
-This project has no build step.
-
-Open it with a local static server instead of `file://` so fonts, favicon, and browser behavior are reliable.
-
-Example:
+This project uses SvelteKit, Tailwind CSS v4, TypeScript, `adapter-static`, Node 24, pnpm, and Vite+ for the dev/build pipeline.
 
 ```sh
 git clone https://github.com/StarlightInsights/Plaintext.gg.git
 cd Plaintext.gg
-python3 -m http.server 8123
+pnpm install
+pnpm dev
 ```
 
-Then open:
+## Commands
 
-```txt
-http://127.0.0.1:8123/
-```
+- `pnpm dev`: start the local development server through `vp dev`
+- `pnpm build`: create the static production build through `vp build`
+- `pnpm test`: run the Node test suite
+- `pnpm run check`: run `svelte-check` with warnings treated as failures, then verify the Vite+ production build
 
 ## Deployment
 
-This repo is intended to be deployed as a static site.
+This repo is intended to be deployed as a static site. The SvelteKit build uses `@sveltejs/adapter-static`, so the generated output in `build/` can be deployed to any static host.
 
-Deploy at minimum:
-
-- `index.html`
-- `favicon.ico`
-- `fonts/`
-- `OFL.txt`
-
-The current setup is suitable for static hosting providers such as Bunny.net.
+Deploy the contents of `build/`.
 
 ## Privacy
 
@@ -62,7 +54,7 @@ The current setup is suitable for static hosting providers such as Bunny.net.
 - No cookies
 - No server-side text storage
 
-Your text stays on your device unless you explicitly copy it or download it.
+Your text stays on your device unless you explicitly copy it or download it. The site does not depend on external fonts, trackers, or third-party runtime resources.
 
 ## Open Source
 
