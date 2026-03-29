@@ -698,6 +698,20 @@
 	</svg>
 {/snippet}
 
+{#snippet copyFeedbackIcon()}
+	<svg
+		aria-hidden="true"
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 256 256"
+		class={toolbarIconClass}
+	>
+		<path d="M160,96V208H48V96Z" opacity="0.2"></path>
+		<path
+			d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"
+		></path>
+	</svg>
+{/snippet}
+
 {#snippet plusIcon()}
 	<svg
 		aria-hidden="true"
@@ -1046,7 +1060,11 @@
 				onclick={handleCopyClick}
 				onmouseleave={clearCopyFeedback}
 			>
-				{@render copyIcon()}
+				{#if copyFeedback === 'idle'}
+					{@render copyIcon()}
+				{:else}
+					{@render copyFeedbackIcon()}
+				{/if}
 			</Button.Root>
 			<Toggle.Root
 				class={iconButtonClass}
