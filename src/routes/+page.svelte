@@ -859,13 +859,12 @@
 							</p>
 							<p class="m-0">just a simple way to write, take notes, and strip formatting.</p>
 							<p class="m-0">
-								Apache-2.0
 								<a
-									href="https://github.com/StarlightInsights/Plaintext.gg/"
+									href="https://github.com/StarlightInsights/plaintext.gg"
 									target="_blank"
 									rel="noreferrer"
 								>
-									github.com/StarlightInsights/Plaintext.gg
+									open-source(https://github.com/StarlightInsights/plaintext.gg)
 								</a>
 							</p>
 						</Dialog.Description>
