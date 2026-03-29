@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { Dialog, Toggle } from 'bits-ui';
+	import { Button, Dialog, Toggle } from 'bits-ui';
 	import { tick } from 'svelte';
 	import {
 		clampFontSize,
@@ -987,7 +987,7 @@
 				role="group"
 				aria-label="Font size controls"
 			>
-				<button
+				<Button.Root
 					type="button"
 					class={[
 						controlButtonClass,
@@ -998,8 +998,8 @@
 					onclick={() => changeFontSize(FONT_STEP)}
 				>
 					{@render plusIcon()}
-				</button>
-				<button
+				</Button.Root>
+				<Button.Root
 					type="button"
 					class={[
 						controlButtonClass,
@@ -1010,18 +1010,18 @@
 					onclick={() => changeFontSize(-FONT_STEP)}
 				>
 					{@render minusIcon()}
-				</button>
+				</Button.Root>
 			</div>
 
-			<button
+			<Button.Root
 				type="button"
 				class={iconButtonClass}
 				aria-label="Save as plaintext file"
 				onclick={handleSaveClick}
 			>
 				{@render saveIcon()}
-			</button>
-			<button
+			</Button.Root>
+			<Button.Root
 				type="button"
 				class={[
 					iconButtonClass,
@@ -1039,7 +1039,7 @@
 				onmouseleave={clearCopyFeedback}
 			>
 				{@render copyIcon()}
-			</button>
+			</Button.Root>
 			<Toggle.Root
 				class={iconButtonClass}
 				pressed={theme === 'dark'}
