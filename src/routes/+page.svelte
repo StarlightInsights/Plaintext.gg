@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { Dialog, Toggle, Toolbar } from 'bits-ui';
+	import { Dialog, Toggle } from 'bits-ui';
 	import { tick } from 'svelte';
 	import {
 		clampFontSize,
@@ -977,15 +977,18 @@
 			</Dialog.Root>
 		</nav>
 
-		<Toolbar.Root
+		<div
 			class="ml-auto flex flex-wrap items-center gap-[0.875rem] pl-[0.9rem] max-sm:ml-0 max-sm:pl-0 max-sm:gap-x-3 max-sm:gap-y-[0.35rem]"
-			aria-label="Editor"
+			role="group"
+			aria-label="Editor controls"
 		>
-			<span
+			<div
 				class="flex items-center gap-[0.2rem] max-sm:gap-[0.3rem]"
+				role="group"
 				aria-label="Font size controls"
 			>
-				<Toolbar.Button
+				<button
+					type="button"
 					class={[
 						controlButtonClass,
 						'max-sm:min-h-11 max-sm:min-w-[2.75rem] max-sm:px-[0.2rem] max-sm:py-2'
@@ -995,8 +998,9 @@
 					onclick={() => changeFontSize(FONT_STEP)}
 				>
 					{@render plusIcon()}
-				</Toolbar.Button>
-				<Toolbar.Button
+				</button>
+				<button
+					type="button"
 					class={[
 						controlButtonClass,
 						'max-sm:min-h-11 max-sm:min-w-[2.75rem] max-sm:px-[0.2rem] max-sm:py-2'
@@ -1006,17 +1010,19 @@
 					onclick={() => changeFontSize(-FONT_STEP)}
 				>
 					{@render minusIcon()}
-				</Toolbar.Button>
-			</span>
+				</button>
+			</div>
 
-			<Toolbar.Button
+			<button
+				type="button"
 				class={iconButtonClass}
 				aria-label="Save as plaintext file"
 				onclick={handleSaveClick}
 			>
 				{@render saveIcon()}
-			</Toolbar.Button>
-			<Toolbar.Button
+			</button>
+			<button
+				type="button"
 				class={[
 					iconButtonClass,
 					copyFeedback === 'success' && 'copy-feedback-success text-[var(--text-primary)]',
@@ -1033,7 +1039,7 @@
 				onmouseleave={clearCopyFeedback}
 			>
 				{@render copyIcon()}
-			</Toolbar.Button>
+			</button>
 			<Toggle.Root
 				class={iconButtonClass}
 				pressed={theme === 'dark'}
@@ -1046,7 +1052,7 @@
 					{@render themeLightIcon()}
 				{/if}
 			</Toggle.Root>
-		</Toolbar.Root>
+		</div>
 		</header>
 
 	<main class="min-h-0 overflow-hidden">
