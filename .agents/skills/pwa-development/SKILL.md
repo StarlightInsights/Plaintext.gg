@@ -40,9 +40,9 @@ Do NOT use this skill when:
 **Symptoms:** No manifest.json, no service worker, online-only
 
 **Interventions:**
-- Run `scripts/manifest-generator.ts` to create manifest
-- Add `<link rel="manifest">` to HTML head
-- Generate minimal SW with `scripts/sw-scaffolder.ts`
+- Inspect `static/manifest.webmanifest` for install metadata completeness
+- Verify the app shell and service worker registration in `src/routes/+layout.svelte`
+- Verify PWA plugin configuration in `vite.config.ts`
 
 ### P1: Basic Manifest Only
 
@@ -53,27 +53,27 @@ Do NOT use this skill when:
 - What should always be fresh (network-first)?
 
 **Interventions:**
-- Use `scripts/cache-strategy-advisor.ts`
-- Implement app shell pattern
-- Add offline fallback page
+- Audit `vite.config.ts` runtime caching rules
+- Verify the offline fallback page at `static/offline.html`
+- Confirm `src/routes/+layout.svelte` registers the service worker only in production
 
 ### P2: Caching Issues
 
 **Symptoms:** Stale content, unexpected caching behavior
 
 **Interventions:**
-- Audit with `scripts/pwa-audit.ts`
-- Map resources to strategies using `data/caching-strategies.json`
-- Add cache expiration and cleanup
+- Audit `vite.config.ts` for precache scope, runtime caching, and expiration rules
+- Review which files are emitted to `static/` and whether they belong in the cache
+- Add or adjust cache expiration and cleanup directly in the Workbox config
 
 ### P3: Update Problems
 
 **Symptoms:** Users stuck on old versions, multiple refreshes needed
 
 **Interventions:**
-- Implement skipWaiting/clients.claim appropriately
-- Add update notification UI (`assets/update-prompt.tsx`)
-- Handle "waiting" state properly
+- Verify `skipWaiting` and `clientsClaim` usage in `vite.config.ts`
+- Review the registration flow in `src/routes/+layout.svelte`
+- Add update notification UI in the app codebase if the current UX is too silent
 
 ### P4: Offline Data Gaps
 
@@ -89,9 +89,9 @@ Do NOT use this skill when:
 **Symptoms:** Works on Android, breaks on iOS
 
 **Interventions:**
-- Review `data/ios-quirks.json`
-- Add apple-mobile-web-app meta tags
-- Handle storage eviction gracefully
+- Review the existing head metadata in `src/app.html` and route components
+- Add `apple-mobile-web-app-*` metadata if installation behavior needs improvement
+- Handle storage eviction and offline recovery gracefully in client persistence code
 
 ### P6: Production Ready
 
@@ -106,14 +106,15 @@ Do NOT use this skill when:
 | Stale While Revalidate | Semi-static content | Serve stale, update cache for next time |
 | Network Only | Auth, real-time data | Always network, no caching |
 
-## Available Scripts
+## Repo Files To Inspect
 
-| Script | Purpose |
-|--------|---------|
-| `manifest-generator.ts` | Generate manifest.json |
-| `sw-scaffolder.ts` | Generate service worker |
-| `cache-strategy-advisor.ts` | Recommend caching strategies |
-| `pwa-audit.ts` | Validate PWA configuration |
+| File | Purpose |
+|------|---------|
+| `vite.config.ts` | PWA plugin setup, precache scope, runtime caching |
+| `src/routes/+layout.svelte` | Service worker registration flow |
+| `static/manifest.webmanifest` | Install metadata |
+| `static/offline.html` | Offline navigation fallback |
+| `src/app.html` | Global head metadata |
 
 ## Anti-Patterns
 
@@ -150,7 +151,7 @@ npm i -D @vite-pwa/sveltekit
 npm i next-pwa
 ```
 
-See `data/framework-patterns.json` for configuration.
+Use the framework's official docs for deeper configuration details when the local repo files are insufficient.
 
 ## Debugging Checklist
 
