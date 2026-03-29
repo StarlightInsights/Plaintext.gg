@@ -923,8 +923,8 @@
 										href="https://github.com/StarlightInsights/plaintext.gg"
 										target="_blank"
 									>
-										open-source.
-									</a>
+										open-source
+									</a>.
 								</p>
 							</Dialog.Description>
 						</div>
@@ -962,9 +962,9 @@
 									localStorage.
 								</p>
 								<p class="m-0">
-									no cookies. no analytics. no tracking. no accounts. no server. no
-									cloud database.
+									no cookies. no analytics. no tracking. no accounts.
 								</p>
+								<p class="m-0">hosted on bunny.net</p>
 								<p class="m-0">your text never leaves your device.</p>
 								<p class="m-0">
 									fonts and icons are bundled with the site.
@@ -1004,19 +1004,19 @@
 							>
 								<p class="m-0">
 									thank you
-									<a href="https://commitmono.com/" target="_blank">
+									<a href="https://commitmono.com/?utm_source=plaintext.gg" target="_blank">
 										Commit Mono
 									</a>.
 								</p>
 								<p class="m-0">
 									thank you
-									<a href="https://phosphoricons.com/" target="_blank">
+									<a href="https://phosphoricons.com/?utm_source=plaintext.gg" target="_blank">
 										Phosphor
 									</a>.
 								</p>
 								<p class="m-0">
 									thank you
-									<a href="https://bits-ui.com/" target="_blank">
+									<a href="https://bits-ui.com/?utm_source=plaintext.gg" target="_blank">
 										Bits UI
 									</a>.
 								</p>
