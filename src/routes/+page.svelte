@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { asset } from '$app/paths';
+	import { asset, resolve } from '$app/paths';
 	import { Dialog, Toggle, Toolbar } from 'bits-ui';
 	import { tick } from 'svelte';
 	import {
@@ -55,7 +55,7 @@
 	let localSaveSequence = 0;
 	let pendingTextVersion: PersistedTextVersion | null = null;
 
-	const homeHref = '/';
+	const homeHref = resolve('/', {});
 	const fontLicenseHref = asset('/OFL.txt');
 	const tabId = browser ? createTabId() : 'server';
 	const controlButtonClass =

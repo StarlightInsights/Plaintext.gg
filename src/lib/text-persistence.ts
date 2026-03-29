@@ -12,6 +12,15 @@ export type PersistedTextRecord = PersistedTextVersion & {
 
 let databasePromise: Promise<IDBDatabase> | null = null;
 
+function resetDatabasePromise(database?: IDBDatabase): void {
+	if (database) {
+		database.onclose = null;
+		database.onversionchange = null;
+	}
+
+	databasePromise = null;
+}
+
 function wrapRequest<T>(request: IDBRequest<T>): Promise<T> {
 	return new Promise((resolve, reject) => {
 		request.onsuccess = () => resolve(request.result);
@@ -38,7 +47,12 @@ function openDatabase(): Promise<IDBDatabase> {
 		request.onsuccess = () => {
 			const database = request.result;
 
+			database.onclose = () => {
+				resetDatabasePromise();
+			};
+
 			database.onversionchange = () => {
+				resetDatabasePromise(database);
 				database.close();
 			};
 
@@ -46,11 +60,12 @@ function openDatabase(): Promise<IDBDatabase> {
 		};
 
 		request.onerror = () => {
-			databasePromise = null;
+			resetDatabasePromise();
 			reject(request.error ?? new Error('Failed to open IndexedDB.'));
 		};
 
 		request.onblocked = () => {
+			resetDatabasePromise();
 			reject(new Error('IndexedDB upgrade blocked.'));
 		};
 	});
