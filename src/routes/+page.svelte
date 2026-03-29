@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { asset, resolve } from '$app/paths';
 	import { Dialog, Toggle, Toolbar } from 'bits-ui';
 	import { tick } from 'svelte';
 	import {
@@ -55,8 +54,6 @@
 	let localSaveSequence = 0;
 	let pendingTextVersion: PersistedTextVersion | null = null;
 
-	const homeHref = resolve('/', {});
-	const fontLicenseHref = asset('/OFL.txt');
 	const tabId = browser ? createTabId() : 'server';
 	const controlButtonClass =
 		'inline-flex cursor-pointer items-center justify-center bg-transparent p-0 text-[oklch(0.49_0_89.88)] no-underline touch-manipulation transition-colors duration-150 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] focus-visible:outline-none disabled:cursor-default disabled:text-[var(--text-placeholder)]';
@@ -730,19 +727,54 @@
 	</svg>
 {/snippet}
 
+{#snippet whyIcon()}
+	<svg
+		aria-hidden="true"
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 256 256"
+		class={toolbarIconClass}
+	>
+		<path
+			d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z"
+			opacity="0.2"
+		></path>
+		<path
+			d="M144,176a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176Zm88-48A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128ZM124,96a12,12,0,1,0-12-12A12,12,0,0,0,124,96Z"
+		></path>
+	</svg>
+{/snippet}
+
+{#snippet privacyIcon()}
+	<svg
+		aria-hidden="true"
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 256 256"
+		class={toolbarIconClass}
+	>
+		<path
+			d="M144,139.72,160,176H96l16-36.28a32,32,0,1,1,32,0Z"
+			opacity="0.2"
+		></path>
+		<path
+			d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-104a40,40,0,1,0-65.94,30.44L88.68,172.77A8,8,0,0,0,96,184h64a8,8,0,0,0,7.32-11.23l-13.38-30.33A40.14,40.14,0,0,0,168,112ZM136.68,143l11,25.05H108.27l11-25.05A8,8,0,0,0,116,132.79a24,24,0,1,1,24,0A8,8,0,0,0,136.68,143Z"
+		></path>
+	</svg>
+{/snippet}
+
 <div
 	data-theme={theme}
 	class="app-shell grid min-h-dvh grid-rows-[auto_1fr] bg-[var(--bg)] text-[var(--text-primary)] transition-[background-color,color] duration-180 ease-out"
 	style="font-family: var(--font-family-main);"
 >
 	<header
-		class="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 py-3.5 text-[0.94rem] font-light transition-[background-color,border-color,color] duration-180 ease-out max-sm:gap-3 max-sm:px-3 max-sm:py-3 max-sm:text-base"
+		class="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 py-2.5 text-[0.94rem] font-light transition-[background-color,border-color,color] duration-180 ease-out max-sm:gap-3 max-sm:px-3 max-sm:py-2.5 max-sm:text-base"
 		style="font-family: var(--font-family-header); font-weight: 300;"
 	>
-		<nav class="flex flex-wrap items-center gap-[0.875rem] max-sm:gap-x-3 max-sm:gap-y-[0.35rem]" aria-label="Info">
-			<a class={controlButtonClass} href={homeHref}>plaintext.gg</a>
+		<nav class="flex flex-wrap items-center gap-[0.45rem] max-sm:gap-x-[0.35rem] max-sm:gap-y-[0.25rem]" aria-label="Info">
 			<Dialog.Root bind:open={whyDialogOpen}>
-				<Dialog.Trigger class={controlButtonClass}>why?</Dialog.Trigger>
+				<Dialog.Trigger class={iconButtonClass} aria-label="Why plaintext?">
+					{@render whyIcon()}
+				</Dialog.Trigger>
 				<Dialog.Overlay class="plain-dialog-overlay fixed inset-0 z-20" />
 				<Dialog.Content
 					class="plain-dialog fixed top-1/2 left-1/2 z-30 w-[min(32rem,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0 text-[var(--text-primary)] outline-none transition-[background-color,border-color,color] duration-180 ease-out sm:w-[min(32rem,calc(100vw-2rem))]"
@@ -780,7 +812,9 @@
 				</Dialog.Content>
 			</Dialog.Root>
 			<Dialog.Root bind:open={privacyDialogOpen}>
-				<Dialog.Trigger class={controlButtonClass}>privacy</Dialog.Trigger>
+				<Dialog.Trigger class={iconButtonClass} aria-label="Privacy">
+					{@render privacyIcon()}
+				</Dialog.Trigger>
 				<Dialog.Overlay class="plain-dialog-overlay fixed inset-0 z-20" />
 				<Dialog.Content
 					class="plain-dialog fixed top-1/2 left-1/2 z-30 w-[min(32rem,calc(100vw-1rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-[var(--panel-border)] bg-[var(--panel-bg)] p-0 text-[var(--text-primary)] outline-none transition-[background-color,border-color,color] duration-180 ease-out sm:w-[min(32rem,calc(100vw-2rem))]"
@@ -813,9 +847,12 @@
 							</p>
 							<p class="m-0">your text never leaves your device.</p>
 							<p class="m-0">
-								all fonts are bundled locally with the site. thank you
+								fonts and icons are bundled with the site. thank you
 								<a href="https://commitmono.com/" target="_blank" rel="noreferrer">
 									Commit Mono
+								</a>. thank you
+								<a href="https://phosphoricons.com/" target="_blank" rel="noreferrer">
+									Phosphor
 								</a>.
 							</p>
 							<p class="m-0">
