@@ -37,12 +37,12 @@ test('normalizeTheme keeps dark mode', () => {
 	assert.equal(normalizeTheme('dark'), 'dark');
 });
 
-test('normalizeToolbarIconsVisibility defaults unknown values to visible', () => {
-	assert.equal(normalizeToolbarIconsVisibility('collapsed'), true);
+test('normalizeToolbarIconsVisibility defaults unknown values to hidden', () => {
+	assert.equal(normalizeToolbarIconsVisibility('collapsed'), false);
 });
 
-test('normalizeToolbarIconsVisibility keeps hidden mode', () => {
-	assert.equal(normalizeToolbarIconsVisibility('hidden'), false);
+test('normalizeToolbarIconsVisibility keeps visible mode', () => {
+	assert.equal(normalizeToolbarIconsVisibility('visible'), true);
 });
 
 test('comparePersistedTextVersions orders newer timestamps first', () => {

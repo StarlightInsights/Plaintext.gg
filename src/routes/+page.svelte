@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { Button, Dialog, Toggle } from 'bits-ui';
 	import { tick } from 'svelte';
+	import { fly } from 'svelte/transition';
 	import {
 		clampFontSize,
 		comparePersistedTextVersions,
@@ -62,6 +63,7 @@
 	const controlButtonClass =
 		'inline-flex cursor-pointer items-center justify-center bg-transparent p-0 text-[oklch(0.49_0_89.88)] no-underline touch-manipulation transition-colors duration-150 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] focus-visible:outline-none disabled:cursor-default disabled:text-[var(--text-placeholder)]';
 	const iconButtonClass = `${controlButtonClass} h-8 w-8 p-1 max-sm:min-h-11 max-sm:min-w-[2.75rem] max-sm:p-2`;
+	const floatingIconButtonClass = iconButtonClass;
 	const toolbarIconClass = 'pointer-events-none h-[1.3rem] w-[1.3rem] shrink-0 fill-current';
 	const dialogButtonClass =
 		'appearance-none border-0 bg-transparent p-0 text-[var(--text-secondary)] transition-colors duration-180 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] focus-visible:outline-none';
@@ -867,14 +869,16 @@
 
 <div
 	data-theme={theme}
-	class="app-shell grid min-h-dvh grid-rows-[auto_1fr] bg-[var(--bg)] text-[var(--text-primary)] transition-[background-color,color] duration-180 ease-out"
+	class="app-shell relative grid min-h-dvh grid-rows-[1fr] bg-[var(--bg)] text-[var(--text-primary)] transition-[background-color,color] duration-180 ease-out"
 	style="font-family: var(--font-family-main);"
 >
-	<header
-		class="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] px-4 py-2.5 text-[0.94rem] font-light transition-[background-color,border-color,color] duration-180 ease-out max-sm:gap-3 max-sm:px-3 max-sm:py-2.5 max-sm:text-base"
-		style="font-family: var(--font-family-header); font-weight: 300;"
-	>
-		{#if showToolbarIcons}
+	{#if showToolbarIcons}
+		<header
+			in:fly={{ y: -10, duration: 180 }}
+			out:fly={{ y: -10, duration: 140 }}
+			class="absolute inset-x-0 top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] bg-[var(--bg)] pl-4 pr-14 py-2.5 text-[0.94rem] font-light transition-[background-color,border-color,color] duration-180 ease-out max-sm:gap-3 max-sm:px-3 max-sm:py-2.5 max-sm:text-base"
+			style="font-family: var(--font-family-header); font-weight: 300;"
+		>
 			<nav
 				class="flex flex-wrap items-center gap-[0.45rem] max-sm:gap-x-[0.35rem] max-sm:gap-y-[0.25rem]"
 				aria-label="Info"
@@ -917,9 +921,8 @@
 									<a
 										href="https://github.com/StarlightInsights/plaintext.gg"
 										target="_blank"
-										rel="noreferrer"
 									>
-										open-source(https://github.com/StarlightInsights/plaintext.gg)
+										open-source.
 									</a>
 								</p>
 							</Dialog.Description>
@@ -1000,19 +1003,19 @@
 							>
 								<p class="m-0">
 									thank you
-									<a href="https://commitmono.com/" target="_blank" rel="noreferrer">
+									<a href="https://commitmono.com/" target="_blank">
 										Commit Mono
 									</a>.
 								</p>
 								<p class="m-0">
 									thank you
-									<a href="https://phosphoricons.com/" target="_blank" rel="noreferrer">
+									<a href="https://phosphoricons.com/" target="_blank">
 										Phosphor
 									</a>.
 								</p>
 								<p class="m-0">
 									thank you
-									<a href="https://bits-ui.com/" target="_blank" rel="noreferrer">
+									<a href="https://bits-ui.com/" target="_blank">
 										Bits UI
 									</a>.
 								</p>
@@ -1053,9 +1056,7 @@
 					</Dialog.Content>
 				</Dialog.Root>
 			</nav>
-		{/if}
-
-		<div
+			<div
 			class="ml-auto flex flex-wrap items-center gap-[0.875rem] pl-[0.9rem] max-sm:ml-0 max-sm:pl-0 max-sm:gap-x-3 max-sm:gap-y-[0.35rem]"
 			role="group"
 			aria-label="Editor controls"
@@ -1135,9 +1136,22 @@
 						{@render themeLightIcon()}
 					{/if}
 				</Toggle.Root>
+					<Toggle.Root
+						class={[iconButtonClass, 'sm:hidden']}
+						pressed={!showToolbarIcons}
+						aria-label="Hide navigation icons and editor controls"
+						onPressedChange={handleToolbarIconsPressedChange}
+					>
+						{@render toolbarIconsVisibleIcon()}
+				</Toggle.Root>
 			{/if}
+			</div>
+		</header>
+		{/if}
+
+		<div class="absolute top-3 right-4 z-30 hidden sm:block">
 			<Toggle.Root
-				class={iconButtonClass}
+				class={floatingIconButtonClass}
 				pressed={!showToolbarIcons}
 				aria-label={
 					showToolbarIcons ? 'Hide navigation icons and editor controls' : 'Show navigation icons and editor controls'
@@ -1151,14 +1165,29 @@
 				{/if}
 			</Toggle.Root>
 		</div>
-		</header>
 
-	<main class="min-h-0 overflow-hidden">
+		{#if !showToolbarIcons}
+			<div class="absolute top-2 right-3 z-30 sm:hidden">
+				<Toggle.Root
+					class={floatingIconButtonClass}
+					pressed={!showToolbarIcons}
+				aria-label="Show navigation icons and editor controls"
+				onPressedChange={handleToolbarIconsPressedChange}
+			>
+				{@render toolbarIconsHiddenIcon()}
+			</Toggle.Root>
+		</div>
+	{/if}
+
+	<main class="relative min-h-0 overflow-hidden">
 		<textarea
 			bind:this={editor}
 			{...browserQuietingAttributes}
 			value={text}
-			class="block h-full min-h-0 w-full box-border resize-none border-0 bg-transparent px-3 pt-4 pb-3 leading-[1.65] text-[var(--text-primary)] caret-[var(--text-primary)] outline-none transition-[background-color,color,caret-color] duration-180 ease-out sm:px-4 sm:pt-5 sm:pb-4"
+				class={[
+					'block h-full min-h-0 w-full box-border resize-none border-0 bg-transparent px-3 pb-3 leading-[1.65] text-[var(--text-primary)] caret-[var(--text-primary)] outline-none transition-[background-color,color,caret-color,padding-top,padding-right] duration-180 ease-out sm:px-4 sm:pb-4',
+					showToolbarIcons ? 'pt-[8.5rem] sm:pt-20' : 'pr-14 pt-10 sm:pr-16 sm:pt-12'
+				]}
 			style:font-size={`${fontSize}px`}
 			aria-label="Plain text editor"
 			aria-autocomplete="none"

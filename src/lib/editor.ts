@@ -35,7 +35,7 @@ export function normalizeTheme(value: string | null): 'light' | 'dark' {
 }
 
 export function normalizeToolbarIconsVisibility(value: string | null): boolean {
-	return value !== 'hidden';
+	return value === 'visible';
 }
 
 export function comparePersistedTextVersions(
