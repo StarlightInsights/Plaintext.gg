@@ -64,6 +64,7 @@
 		'inline-flex cursor-pointer items-center justify-center bg-transparent p-0 text-[oklch(0.49_0_89.88)] no-underline touch-manipulation transition-colors duration-150 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] focus-visible:outline-none disabled:cursor-default disabled:text-[var(--text-placeholder)]';
 	const iconButtonClass = `${controlButtonClass} h-8 w-8 p-1 max-sm:min-h-11 max-sm:min-w-[2.75rem] max-sm:p-2`;
 	const floatingIconButtonClass = iconButtonClass;
+	const hiddenFloatingIconButtonClass = `${floatingIconButtonClass} opacity-65 hover:opacity-100 focus-visible:opacity-100`;
 	const toolbarIconClass = 'pointer-events-none h-[1.3rem] w-[1.3rem] shrink-0 fill-current';
 	const dialogButtonClass =
 		'appearance-none border-0 bg-transparent p-0 text-[var(--text-secondary)] transition-colors duration-180 ease-out hover:text-[var(--text-primary)] focus-visible:text-[var(--text-primary)] focus-visible:outline-none';
@@ -1169,10 +1170,10 @@
 		{#if !showToolbarIcons}
 			<div class="absolute top-2 right-3 z-30 sm:hidden">
 				<Toggle.Root
-					class={floatingIconButtonClass}
+					class={hiddenFloatingIconButtonClass}
 					pressed={!showToolbarIcons}
-				aria-label="Show navigation icons and editor controls"
-				onPressedChange={handleToolbarIconsPressedChange}
+					aria-label="Show navigation icons and editor controls"
+					onPressedChange={handleToolbarIconsPressedChange}
 			>
 				{@render toolbarIconsHiddenIcon()}
 			</Toggle.Root>
