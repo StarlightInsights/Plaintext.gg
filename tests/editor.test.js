@@ -8,6 +8,7 @@ import {
 	isPersistedTextVersionNewer,
 	MAX_FONT_SIZE,
 	MIN_FONT_SIZE,
+	normalizeToolbarIconsVisibility,
 	normalizeTheme,
 	parseStoredFontSize
 } from '../src/lib/editor.ts';
@@ -34,6 +35,14 @@ test('normalizeTheme defaults unknown values to light', () => {
 
 test('normalizeTheme keeps dark mode', () => {
 	assert.equal(normalizeTheme('dark'), 'dark');
+});
+
+test('normalizeToolbarIconsVisibility defaults unknown values to visible', () => {
+	assert.equal(normalizeToolbarIconsVisibility('collapsed'), true);
+});
+
+test('normalizeToolbarIconsVisibility keeps hidden mode', () => {
+	assert.equal(normalizeToolbarIconsVisibility('hidden'), false);
 });
 
 test('comparePersistedTextVersions orders newer timestamps first', () => {
