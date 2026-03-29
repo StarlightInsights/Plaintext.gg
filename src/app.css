@@ -53,7 +53,7 @@ textarea {
   --bg: oklch(1 0 89.88);
   --panel-bg: oklch(1 0 89.88);
   --border: oklch(0.9219 0 89.88);
-  --panel-border: oklch(0.9219 0 89.88);
+  --panel-border: oklch(0.8 0 89.88);
   --text-primary: oklch(0.2178 0 89.88);
   --text-secondary: oklch(0.683 0 89.88);
   --text-placeholder: oklch(0.8452 0 89.88);
@@ -79,12 +79,25 @@ textarea {
 }
 
 .plain-dialog[data-state="open"] {
-  animation: dialog-in 180ms ease;
+  animation: dialog-fade-in 160ms ease-out both;
+}
+
+.plain-dialog[data-state="closed"] {
+  animation: dialog-fade-out 100ms ease-in both;
 }
 
 .plain-dialog-overlay {
-  background: var(--overlay);
-  transition: background-color var(--ui-transition);
+  background-color: var(--overlay);
+  opacity: 0;
+  will-change: opacity;
+}
+
+.plain-dialog-overlay[data-state="open"] {
+  animation: dialog-overlay-in 80ms ease-out both;
+}
+
+.plain-dialog-overlay[data-state="closed"] {
+  animation: dialog-overlay-out 80ms ease-in both;
 }
 
 .dialog-copy a,
@@ -108,15 +121,43 @@ textarea {
   animation: editor-copy-pulse 620ms ease-in-out;
 }
 
-@keyframes dialog-in {
+@keyframes dialog-fade-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+  }
+}
+
+@keyframes dialog-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-overlay-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }
 

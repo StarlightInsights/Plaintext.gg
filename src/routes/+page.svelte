@@ -115,7 +115,6 @@
 
 		let isCancelled = false;
 		let readyAnimationFrame = 0;
-		let motionAnimationFrame = 0;
 
 		const settleInitialLayout = async () => {
 			if ('fonts' in document) {
@@ -140,11 +139,6 @@
 				}
 
 				initialLayoutReady = true;
-				motionAnimationFrame = window.requestAnimationFrame(() => {
-					if (!isCancelled) {
-						enableUiMotion = true;
-					}
-				});
 			});
 		};
 
@@ -153,7 +147,20 @@
 		return () => {
 			isCancelled = true;
 			window.cancelAnimationFrame(readyAnimationFrame);
-			window.cancelAnimationFrame(motionAnimationFrame);
+		};
+	});
+
+	$effect(() => {
+		if (!browser || !initialLayoutReady || enableUiMotion) {
+			return;
+		}
+
+		const animationFrame = window.requestAnimationFrame(() => {
+			enableUiMotion = true;
+		});
+
+		return () => {
+			window.cancelAnimationFrame(animationFrame);
 		};
 	});
 
