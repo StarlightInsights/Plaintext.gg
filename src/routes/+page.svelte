@@ -59,6 +59,8 @@
 	let localSaveSequence = 0;
 	let pendingTextVersion: PersistedTextVersion | null = null;
 	let visibleToolbarHeight = $state(0);
+	let initialLayoutReady = $state(false);
+	let enableUiMotion = $state(false);
 
 	const tabId = browser ? createTabId() : 'server';
 	const controlButtonClass =
@@ -99,6 +101,59 @@
 
 		return () => {
 			document.documentElement.style.removeProperty('color-scheme');
+		};
+	});
+
+	$effect(() => {
+		if (!browser || initialLayoutReady) {
+			return;
+		}
+
+		if (showToolbarIcons && !visibleToolbarHeader) {
+			return;
+		}
+
+		let isCancelled = false;
+		let readyAnimationFrame = 0;
+		let motionAnimationFrame = 0;
+
+		const settleInitialLayout = async () => {
+			if ('fonts' in document) {
+				try {
+					await document.fonts.ready;
+				} catch {
+					// Keep the first render moving even if the font set rejects.
+				}
+			}
+
+			if (isCancelled) {
+				return;
+			}
+
+			if (showToolbarIcons && visibleToolbarHeader) {
+				visibleToolbarHeight = Math.ceil(visibleToolbarHeader.getBoundingClientRect().height);
+			}
+
+			readyAnimationFrame = window.requestAnimationFrame(() => {
+				if (isCancelled) {
+					return;
+				}
+
+				initialLayoutReady = true;
+				motionAnimationFrame = window.requestAnimationFrame(() => {
+					if (!isCancelled) {
+						enableUiMotion = true;
+					}
+				});
+			});
+		};
+
+		void settleInitialLayout();
+
+		return () => {
+			isCancelled = true;
+			window.cancelAnimationFrame(readyAnimationFrame);
+			window.cancelAnimationFrame(motionAnimationFrame);
 		};
 	});
 
@@ -878,14 +933,17 @@
 
 <div
 	data-theme={theme}
-	class="app-shell relative grid min-h-dvh grid-rows-[1fr] bg-[var(--bg)] text-[var(--text-primary)] transition-[background-color,color] duration-180 ease-out"
+	class={[
+		'app-shell relative grid min-h-dvh grid-rows-[1fr] bg-[var(--bg)] text-[var(--text-primary)] transition-[background-color,color] duration-180 ease-out',
+		!initialLayoutReady && 'invisible pointer-events-none'
+	]}
 	style="font-family: var(--font-family-main);"
 >
 	{#if showToolbarIcons}
 		<header
 			bind:this={visibleToolbarHeader}
-			in:fly={{ y: -10, duration: 180 }}
-			out:fly={{ y: -10, duration: 140 }}
+			in:fly={enableUiMotion ? { y: -10, duration: 180 } : { y: 0, duration: 0 }}
+			out:fly={enableUiMotion ? { y: -10, duration: 140 } : { y: 0, duration: 0 }}
 			class="absolute inset-x-0 top-0 z-20 flex flex-wrap items-start justify-between gap-x-4 gap-y-3 border-b border-[var(--border)] bg-[var(--bg)] px-4 py-2.5 text-[0.94rem] font-light transition-[background-color,border-color,color] duration-180 ease-out sm:items-center sm:pr-14 max-sm:px-3 max-sm:text-base"
 			style="font-family: var(--font-family-header); font-weight: 300;"
 		>
@@ -1163,7 +1221,9 @@
 			{...browserQuietingAttributes}
 			value={text}
 			class={[
-				'block h-full min-h-0 w-full box-border resize-none border-0 bg-transparent px-3 pb-3 leading-[1.65] text-[var(--text-primary)] caret-[var(--text-primary)] outline-none transition-[background-color,color,caret-color,padding-top,padding-right] duration-180 ease-out sm:px-4 sm:pb-4',
+				enableUiMotion
+					? 'block h-full min-h-0 w-full box-border resize-none border-0 bg-transparent px-3 pb-3 leading-[1.65] text-[var(--text-primary)] caret-[var(--text-primary)] outline-none transition-[background-color,color,caret-color,padding-top,padding-right] duration-180 ease-out sm:px-4 sm:pb-4'
+					: 'block h-full min-h-0 w-full box-border resize-none border-0 bg-transparent px-3 pb-3 leading-[1.65] text-[var(--text-primary)] caret-[var(--text-primary)] outline-none transition-[background-color,color,caret-color] duration-180 ease-out sm:px-4 sm:pb-4',
 				showToolbarIcons
 					? 'pt-[calc(var(--visible-toolbar-height,0px)+0.75rem)] sm:pt-[calc(var(--visible-toolbar-height,0px)+1rem)]'
 					: 'pr-14 pt-10 sm:pr-16 sm:pt-12'
