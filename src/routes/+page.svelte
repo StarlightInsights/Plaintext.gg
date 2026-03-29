@@ -825,7 +825,7 @@
 								class="m-0 text-base font-normal"
 								style="font-family: var(--font-family-title);"
 							>
-								why plaintext?
+								why plaintext.gg?
 							</Dialog.Title>
 							<Dialog.Close class={dialogButtonClass} aria-label="Close dialog">
 								x
@@ -843,8 +843,16 @@
 								your text is saved locally in your browser. nothing is sent to any
 								server. ever.
 							</p>
+							<p class="m-0">just a simple way to write, take notes, and strip formatting.</p>
 							<p class="m-0">
-								it is the simplest way to write, take notes, and strip formatting.
+								Apache-2.0
+								<a
+									href="https://github.com/StarlightInsights/Plaintext.gg/"
+									target="_blank"
+									rel="noreferrer"
+								>
+									github.com/StarlightInsights/Plaintext.gg
+								</a>
 							</p>
 						</Dialog.Description>
 					</div>
