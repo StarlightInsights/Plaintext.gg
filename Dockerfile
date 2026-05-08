@@ -10,7 +10,7 @@ WORKDIR /app
 # Skip the playwright chromium download: the image only serves the built
 # output, tests run from the host against the container.
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-RUN npm install -g pnpm@10
+RUN npm install -g pnpm@11
 
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --ignore-scripts

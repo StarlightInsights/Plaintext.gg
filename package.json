@@ -2,7 +2,7 @@
   "name": "plaintext-gg",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@11.0.8",
   "engines": {
     "node": ">=25"
   },
@@ -26,15 +26,15 @@
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@sveltejs/adapter-static": "^3.0.10",
-    "@sveltejs/kit": "^2.57.1",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@sveltejs/kit": "^2.59.1",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tailwindcss/vite": "^4.2.4",
-    "@types/node": "^25.6.0",
-    "svelte": "^5.55.4",
-    "svelte-check": "^4.4.6",
+    "@types/node": "^25.6.2",
+    "svelte": "^5.55.5",
+    "svelte-check": "^4.4.8",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
-    "vite": "^8.0.9",
+    "vite": "^8.0.11",
     "vitest": "^4.1.5"
   },
   "pnpm": {
