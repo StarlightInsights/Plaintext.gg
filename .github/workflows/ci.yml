@@ -22,28 +22,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      # The action reads the pnpm version from `packageManager` in package.json.
-      # Specifying `version:` here conflicts with that (action-setup@v6).
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup Vite Plus
+        uses: voidzero-dev/setup-vp@v1
         with:
           node-version-file: .node-version
-          cache: pnpm
+          cache: true
+          # We re-run install with --frozen-lockfile below to enforce the
+          # lockfile in CI, so skip the action's auto-install.
+          run-install: false
 
       - name: Install dependencies
-        run: pnpm install
+        # `vp install` detects pnpm-lock.yaml and runs pnpm under the hood,
+        # which satisfies the `preinstall` pnpm-only guard in package.json.
+        # Postinstall downloads chromium via `playwright install chromium`.
+        run: vp install --frozen-lockfile
 
       - name: Format + lint (vp check)
-        run: pnpm exec vp check
+        run: vp check
 
       - name: Typecheck
-        run: pnpm exec vp run typecheck
+        run: vp run typecheck
 
       - name: Unit tests
-        run: pnpm exec vp run test:unit
+        run: vp run test:unit
 
       # E2E tests run against the actual production Docker image so we exercise
       # the real nginx config + static-file serving + SPA fallback.
@@ -58,13 +59,26 @@ jobs:
           timeout 30 bash -c 'until curl -sf http://localhost:3999 > /dev/null; do sleep 1; done' \
             || { echo "Container failed to become ready"; docker logs plaintext-gg; exit 1; }
 
+      - name: Install Playwright system deps
+        # `npx` ships with Node and resolves binaries from node_modules/.bin,
+        # so this works without pnpm being on PATH.
+        run: npx playwright install-deps chromium
+
       - name: E2E tests
         env:
           # Opts the `tests/e2e/nginx.spec.ts` suite in — those tests assert
           # nginx-specific behavior (security headers, cache-control, SPA
           # fallback status codes) that vp preview doesn't mirror.
           TEST_DOCKER_HOSTING: "1"
-        run: pnpm exec vp run test:e2e
+        run: vp run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
 
       - name: Dump container logs on failure
         if: failure()
