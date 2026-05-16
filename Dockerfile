@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
 # ---- Build stage ----
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
-# Node 25 alpine ships without corepack — install pnpm directly. Pin to the
+# Node 26 alpine ships without corepack — install pnpm directly. Pin to the
 # same major as `packageManager` in package.json for reproducibility.
 # Skip the playwright chromium download: the image only serves the built
 # output, tests run from the host against the container.
