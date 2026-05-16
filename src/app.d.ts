@@ -11,7 +11,7 @@ declare global {
   namespace svelteHTML {
     interface HTMLAttributes<T> {
       // Non-standard but widely supported: disables iOS Safari autocorrect.
-      autocorrect?: 'on' | 'off';
+      autocorrect?: "on" | "off";
     }
   }
 }

@@ -6,10 +6,10 @@
   import { preferences } from '$lib/state/preferences.svelte';
   import type { FontFamily } from '$lib/types';
 
-  let dialog: Dialog;
+  let dialog: Dialog | undefined = $state(undefined);
 
   export function show(): void {
-    dialog.show();
+    dialog?.show();
   }
 
   function isWeightSupported(weight: number): boolean {

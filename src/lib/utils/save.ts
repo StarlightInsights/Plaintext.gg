@@ -1,15 +1,15 @@
-import { announcer } from '$lib/state/announce.svelte';
-import { documents } from '$lib/state/documents.svelte';
-import { DEFAULT_SLUG } from '$lib/constants';
+import { announcer } from "$lib/state/announce.svelte";
+import { documents } from "$lib/state/documents.svelte";
+import { DEFAULT_SLUG } from "$lib/constants";
 
 export function filenameForSlug(slug: string): string {
-  return slug === DEFAULT_SLUG ? 'plaintext.txt' : `${slug}.txt`;
+  return slug === DEFAULT_SLUG ? "plaintext.txt" : `${slug}.txt`;
 }
 
 function triggerDownload(content: string, filename: string): void {
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);

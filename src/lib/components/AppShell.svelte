@@ -19,10 +19,10 @@
   let toolbarHeight = $state(0);
   let editorEl: HTMLTextAreaElement | undefined = $state(undefined);
 
-  let infoDialog: InfoDialog;
-  let settingsDialog: SettingsDialog;
-  let documentsDialog: DocumentsDialog;
-  let editor: Editor;
+  let infoDialog: InfoDialog | undefined = $state(undefined);
+  let settingsDialog: SettingsDialog | undefined = $state(undefined);
+  let documentsDialog: DocumentsDialog | undefined = $state(undefined);
+  let editor: Editor | undefined = $state(undefined);
 
   onMount(() => {
     documents.openBroadcastChannel();
@@ -102,6 +102,7 @@
   }
 
   async function handleFilesSelected(files: FileList) {
+    if (!editor) return;
     const content = await editor.readFiles(files);
     editor.insertAtCursor(content);
   }
@@ -145,9 +146,9 @@
   <Toolbar
     bind:clientHeight={toolbarHeight}
     {slideIn}
-    onInfoClick={() => infoDialog.show()}
-    onDocumentsClick={() => documentsDialog.show()}
-    onSettingsClick={() => settingsDialog.show()}
+    onInfoClick={() => infoDialog?.show()}
+    onDocumentsClick={() => documentsDialog?.show()}
+    onSettingsClick={() => settingsDialog?.show()}
     onFilesSelected={handleFilesSelected}
   />
   <DesktopToolbarToggle />

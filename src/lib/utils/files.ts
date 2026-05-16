@@ -21,7 +21,7 @@ export function readFileAsText(file: File): Promise<string> {
  */
 export async function readFilesAsText(files: FileList | File[]): Promise<string> {
   const contents = await Promise.all(Array.from(files, readFileAsText));
-  return contents.join('\n');
+  return contents.join("\n");
 }
 
 function isBinaryContent(content: string): boolean {

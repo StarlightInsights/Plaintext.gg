@@ -1,6 +1,6 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vitest/config';
+import { sveltekit } from "@sveltejs/kit/vite";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   plugins: [tailwindcss(), sveltekit()],
@@ -8,10 +8,14 @@ export default defineConfig({
   // (unprefixed), and other evergreen features. Without this, compiled CSS
   // strips backdrop-filter for older Safari compat.
   build: {
-    cssTarget: ['chrome120', 'firefox120', 'safari17'],
+    cssTarget: ["chrome120", "firefox120", "safari17"],
   },
   test: {
-    include: ['tests/unit/**/*.test.ts'],
-    environment: 'node',
+    include: ["tests/unit/**/*.test.ts"],
+    environment: "node",
+  },
+  fmt: {},
+  lint: {
+    options: { typeAware: true, typeCheck: true },
   },
 });

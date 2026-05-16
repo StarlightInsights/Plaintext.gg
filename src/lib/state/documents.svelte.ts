@@ -1,18 +1,18 @@
-import { PERSIST_DELAY_MS } from '../constants';
-import { deleteRecord, listRecords, loadRecord, saveRecord } from '../db/documents';
-import { clearDraft, readDraft, writeDraft } from '../utils/session-draft';
-import { syncChannelName } from '../utils/storage-keys';
-import { compareVersions, createRecord, isVersionNewer, toVersion } from '../utils/versions';
-import type { DocumentRecord, SortMode, SyncMessage, Version } from '../types';
+import { PERSIST_DELAY_MS } from "../constants";
+import { deleteRecord, listRecords, loadRecord, saveRecord } from "../db/documents";
+import { clearDraft, readDraft, writeDraft } from "../utils/session-draft";
+import { syncChannelName } from "../utils/storage-keys";
+import { compareVersions, createRecord, isVersionNewer, toVersion } from "../utils/versions";
+import type { DocumentRecord, SortMode, SyncMessage, Version } from "../types";
 
 function generateTabId(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
-  return 'tab-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+  return "tab-" + Date.now() + "-" + Math.random().toString(36).slice(2);
 }
 
 function createSyncMessage(version: Version): SyncMessage {
   return {
-    type: 'text-updated',
+    type: "text-updated",
     updatedAt: version.updatedAt,
     sourceTabId: version.sourceTabId,
     saveSequence: version.saveSequence,
@@ -20,22 +20,31 @@ function createSyncMessage(version: Version): SyncMessage {
 }
 
 function parseSyncMessage(value: unknown): SyncMessage | null {
-  if (!value || typeof value !== 'object') return null;
+  if (!value || typeof value !== "object") return null;
   const v = value as Record<string, unknown>;
-  if (v.type !== 'text-updated') return null;
-  if (typeof v.updatedAt !== 'number' || typeof v.sourceTabId !== 'string' || typeof v.saveSequence !== 'number') {
+  if (v.type !== "text-updated") return null;
+  if (
+    typeof v.updatedAt !== "number" ||
+    typeof v.sourceTabId !== "string" ||
+    typeof v.saveSequence !== "number"
+  ) {
     return null;
   }
-  return { type: 'text-updated', updatedAt: v.updatedAt, sourceTabId: v.sourceTabId, saveSequence: v.saveSequence };
+  return {
+    type: "text-updated",
+    updatedAt: v.updatedAt,
+    sourceTabId: v.sourceTabId,
+    saveSequence: v.saveSequence,
+  };
 }
 
 export type ApplyTextCallback = (nextText: string) => void;
 
 class DocumentsState {
-  currentSlug: string = $state('current');
-  text: string = $state('');
+  currentSlug: string = $state("current");
+  text: string = $state("");
   records: DocumentRecord[] = $state([]);
-  sortMode: SortMode = $state('alpha');
+  sortMode: SortMode = $state("alpha");
 
   #tabId = generateTabId();
   #localSaveSequence = 0;
@@ -69,11 +78,11 @@ class DocumentsState {
     this.closeBroadcastChannel();
 
     this.currentSlug = slug;
-    this.text = '';
+    this.text = "";
     this.#persistedVersion = null;
     this.#pendingVersion = null;
     this.#hasPendingEdits = false;
-    this.#applyText?.('');
+    this.#applyText?.("");
 
     this.openBroadcastChannel();
     await this.initPersistence();
@@ -102,7 +111,7 @@ class DocumentsState {
     this.#clearPersistTimer();
     this.#persistTimeout = setTimeout(() => {
       this.#persistTimeout = null;
-      this.#persistText(nextText);
+      void this.#persistText(nextText);
     }, PERSIST_DELAY_MS);
   }
 
@@ -119,35 +128,39 @@ class DocumentsState {
     const slug = this.currentSlug;
 
     if (!nextText) {
-      this.#persistChain = this.#persistChain.catch(() => {}).then(async () => {
-        await deleteRecord(slug);
-        this.#persistedVersion = nextVersion;
-        this.#pendingVersion = null;
-        this.#hasPendingEdits = false;
-        clearDraft(slug);
-        this.#broadcastUpdate(nextVersion);
-      });
+      this.#persistChain = this.#persistChain
+        .catch(() => {})
+        .then(async () => {
+          await deleteRecord(slug);
+          this.#persistedVersion = nextVersion;
+          this.#pendingVersion = null;
+          this.#hasPendingEdits = false;
+          clearDraft(slug);
+          this.#broadcastUpdate(nextVersion);
+        });
       return this.#persistChain.catch(() => {});
     }
 
     const nextRecord = createRecord(nextText, nextVersion, slug);
 
-    this.#persistChain = this.#persistChain.catch(() => {}).then(async () => {
-      const written = await saveRecord(nextRecord);
-      const writtenVersion = toVersion(written);
-      this.#persistedVersion = writtenVersion;
+    this.#persistChain = this.#persistChain
+      .catch(() => {})
+      .then(async () => {
+        const written = await saveRecord(nextRecord);
+        const writtenVersion = toVersion(written);
+        this.#persistedVersion = writtenVersion;
 
-      if (this.#pendingVersion && compareVersions(this.#pendingVersion, writtenVersion) <= 0) {
-        this.#pendingVersion = null;
-      }
+        if (this.#pendingVersion && compareVersions(this.#pendingVersion, writtenVersion) <= 0) {
+          this.#pendingVersion = null;
+        }
 
-      if (this.text === written.text && !this.#pendingVersion) {
-        this.#hasPendingEdits = false;
-        clearDraft(slug);
-      }
+        if (this.text === written.text && !this.#pendingVersion) {
+          this.#hasPendingEdits = false;
+          clearDraft(slug);
+        }
 
-      this.#broadcastUpdate(writtenVersion);
-    });
+        this.#broadcastUpdate(writtenVersion);
+      });
 
     return this.#persistChain.catch(() => {});
   }
@@ -227,7 +240,7 @@ class DocumentsState {
   }
 
   openBroadcastChannel(): void {
-    if (typeof BroadcastChannel === 'undefined') return;
+    if (typeof BroadcastChannel === "undefined") return;
     this.#broadcastChannel?.close();
     this.#broadcastChannel = new BroadcastChannel(syncChannelName(this.currentSlug));
     this.#broadcastChannel.onmessage = (event) => this.#handleBroadcast(event);
@@ -243,7 +256,7 @@ class DocumentsState {
     if (!msg || msg.sourceTabId === this.#tabId) return;
     const nv = toVersion(msg);
     if (!isVersionNewer(nv, this.#persistedVersion)) return;
-    this.refreshFromPersistence(nv);
+    void this.refreshFromPersistence(nv);
   }
 
   async reloadList(): Promise<void> {

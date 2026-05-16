@@ -1,4 +1,4 @@
-import type { DocumentRecord, Version } from '../types';
+import type { DocumentRecord, Version } from "../types";
 
 export function compareVersions(a: Version | null, b: Version | null): number {
   if (!a && !b) return 0;
