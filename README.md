@@ -1,4 +1,4 @@
-# plaintext.gg
+# plaintext.gg.
 
 Sometimes you just want plain text.
 
