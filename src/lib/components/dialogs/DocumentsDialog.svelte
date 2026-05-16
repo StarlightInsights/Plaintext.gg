@@ -8,13 +8,13 @@
   import { documents } from '$lib/state/documents.svelte';
   import type { DocumentRecord } from '$lib/types';
 
-  let dialog: Dialog;
-  let createInput: HTMLInputElement;
+  let dialog: Dialog | undefined = $state(undefined);
+  let createInput: HTMLInputElement | undefined = $state(undefined);
   let createError = $state('');
 
   export function show(): void {
     documents.reloadList();
-    dialog.show();
+    dialog?.show();
   }
 
   // The root document (`/`) is always shown first, even when empty, so users
@@ -54,6 +54,7 @@
 
   async function handleCreateSubmit(e: SubmitEvent) {
     e.preventDefault();
+    if (!createInput) return;
     const raw = createInput.value.trim();
     if (!raw) {
       showError('Enter a name for the document.');
@@ -71,7 +72,7 @@
       createInput.focus();
       return;
     }
-    dialog.close();
+    dialog?.close();
     await goto('/' + slug);
   }
 
@@ -159,7 +160,7 @@
             record.id === documents.currentSlug ? 'active text-fg' : 'text-muted',
             i > 0 && 'border-t border-line',
           ]}
-          onclick={() => dialog.close()}
+          onclick={() => dialog?.close()}
         >{formatLink(record.id)}</a>
       </li>
     {/each}

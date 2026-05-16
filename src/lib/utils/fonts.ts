@@ -1,10 +1,5 @@
-import {
-  DEFAULT_FONT_WEIGHT,
-  FONT_WEIGHTS,
-  MAX_FONT_SIZE,
-  MIN_FONT_SIZE,
-} from '../constants';
-import type { FontFamily } from '../types';
+import { DEFAULT_FONT_WEIGHT, FONT_WEIGHTS, MAX_FONT_SIZE, MIN_FONT_SIZE } from "../constants";
+import type { FontFamily } from "../types";
 
 export function clampFontSize(n: number): number {
   return Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, n));
@@ -31,10 +26,10 @@ export function parseStoredFontWeight(v: string | null): number {
 }
 
 export function parseStoredFontItalic(v: string | null): boolean {
-  return v === 'true';
+  return v === "true";
 }
 
 export function normalizeFontFamily(v: string | null): FontFamily {
-  if (v === 'sans-serif' || v === 'serif' || v === 'dyslexic') return v;
-  return 'mono';
+  if (v === "sans-serif" || v === "serif" || v === "dyslexic") return v;
+  return "mono";
 }

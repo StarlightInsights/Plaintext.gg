@@ -1,8 +1,8 @@
 class Announcer {
-  message = $state('');
+  message = $state("");
 
   announce(msg: string): void {
-    this.message = '';
+    this.message = "";
     requestAnimationFrame(() => {
       this.message = msg;
     });

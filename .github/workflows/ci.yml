@@ -30,11 +30,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
+          node-version-file: .node-version
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Format + lint (vp check)
+        run: pnpm exec vp check
 
       - name: Typecheck
         run: pnpm run typecheck
@@ -60,8 +63,8 @@ jobs:
           # Opts the `tests/e2e/nginx.spec.ts` suite in — those tests assert
           # nginx-specific behavior (security headers, cache-control, SPA
           # fallback status codes) that vite preview doesn't mirror.
-          TEST_DOCKER_HOSTING: '1'
-        run: pnpm run test:e2e
+          TEST_DOCKER_HOSTING: "1"
+        run: pnpm exec vp run test:e2e
 
       - name: Dump container logs on failure
         if: failure()

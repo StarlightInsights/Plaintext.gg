@@ -26,7 +26,7 @@
     onFilesSelected,
   }: Props = $props();
 
-  let fileInputEl: HTMLInputElement;
+  let fileInputEl: HTMLInputElement | undefined = $state(undefined);
   let copyState = $state<'idle' | 'success' | 'error'>('idle');
   let copyTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -68,6 +68,7 @@
   }
 
   function handleUploadClick() {
+    if (!fileInputEl) return;
     fileInputEl.value = '';
     fileInputEl.click();
   }

@@ -2,26 +2,17 @@
   "name": "plaintext-gg",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.1.2",
-  "engines": {
-    "node": ">=26"
-  },
-  "browserslist": [
-    "chrome >= 120",
-    "firefox >= 120",
-    "safari >= 17"
-  ],
   "scripts": {
     "preinstall": "node -e \"if(!process.env.npm_execpath?.includes('pnpm')){console.error('Use pnpm, not npm.');process.exit(1)}\"",
     "postinstall": "playwright install chromium",
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview --port 3999",
-    "test": "pnpm run test:unit && pnpm run test:e2e",
-    "test:unit": "vitest run",
-    "test:e2e": "pnpm exec playwright test",
-    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check": "pnpm run typecheck && pnpm test"
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview --port 3999",
+    "test": "vp run test:unit && vp run test:e2e",
+    "test:unit": "vp test run",
+    "test:e2e": "vp exec playwright test",
+    "typecheck": "vp exec svelte-kit sync && vp exec svelte-check --tsconfig ./tsconfig.json",
+    "check": "vp check && vp run typecheck && vp run test"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
@@ -34,7 +25,17 @@
     "svelte-check": "^4.4.8",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.13",
-    "vitest": "^4.1.6"
-  }
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "browserslist": [
+    "chrome >= 120",
+    "firefox >= 120",
+    "safari >= 17"
+  ],
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "pnpm@11.1.2"
 }

@@ -1,6 +1,6 @@
-export type Theme = 'light' | 'dark';
+export type Theme = "light" | "dark";
 
-export type FontFamily = 'mono' | 'sans-serif' | 'serif' | 'dyslexic';
+export type FontFamily = "mono" | "sans-serif" | "serif" | "dyslexic";
 
 export interface Version {
   updatedAt: number;
@@ -22,10 +22,10 @@ export interface SessionDraft {
 }
 
 export interface SyncMessage {
-  type: 'text-updated';
+  type: "text-updated";
   updatedAt: number;
   sourceTabId: string;
   saveSequence: number;
 }
 
-export type SortMode = 'alpha' | 'recent';
+export type SortMode = "alpha" | "recent";

@@ -1,11 +1,25 @@
-import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, DEFAULT_FONT_WEIGHT, FONT_FAMILY_WEIGHTS, STORAGE_KEYS, THEME_COLORS } from '../constants';
-import { clampFontSize, clampFontWeight, normalizeFontFamily, parseStoredFontItalic, parseStoredFontSize, parseStoredFontWeight } from '../utils/fonts';
-import { loadStored, saveStored } from '../utils/local-storage';
-import { normalizeTheme, normalizeToolbarVisibility } from '../utils/theme';
-import type { FontFamily, Theme } from '../types';
+import {
+  DEFAULT_FONT_FAMILY,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_FONT_WEIGHT,
+  FONT_FAMILY_WEIGHTS,
+  STORAGE_KEYS,
+  THEME_COLORS,
+} from "../constants";
+import {
+  clampFontSize,
+  clampFontWeight,
+  normalizeFontFamily,
+  parseStoredFontItalic,
+  parseStoredFontSize,
+  parseStoredFontWeight,
+} from "../utils/fonts";
+import { loadStored, saveStored } from "../utils/local-storage";
+import { normalizeTheme, normalizeToolbarVisibility } from "../utils/theme";
+import type { FontFamily, Theme } from "../types";
 
 class PreferencesState {
-  theme: Theme = $state('light');
+  theme: Theme = $state("light");
   fontSize: number = $state(DEFAULT_FONT_SIZE);
   fontFamily: FontFamily = $state(DEFAULT_FONT_FAMILY);
   fontWeight: number = $state(DEFAULT_FONT_WEIGHT);
@@ -31,7 +45,7 @@ class PreferencesState {
   }
 
   toggleTheme(): void {
-    this.setTheme(this.theme === 'dark' ? 'light' : 'dark');
+    this.setTheme(this.theme === "dark" ? "light" : "dark");
   }
 
   setFontSize(size: number): void {
@@ -61,7 +75,7 @@ class PreferencesState {
 
   setToolbarVisible(visible: boolean): void {
     this.toolbarVisible = visible;
-    saveStored(STORAGE_KEYS.toolbarIcons, visible ? 'visible' : 'hidden');
+    saveStored(STORAGE_KEYS.toolbarIcons, visible ? "visible" : "hidden");
   }
 
   toggleToolbar(): void {
@@ -76,7 +90,7 @@ class PreferencesState {
     saveStored(STORAGE_KEYS.fontFamily, DEFAULT_FONT_FAMILY);
     saveStored(STORAGE_KEYS.fontSize, String(DEFAULT_FONT_SIZE));
     saveStored(STORAGE_KEYS.fontWeight, String(DEFAULT_FONT_WEIGHT));
-    saveStored(STORAGE_KEYS.fontItalic, 'false');
+    saveStored(STORAGE_KEYS.fontItalic, "false");
   }
 
   handleStorageEvent(e: StorageEvent): void {
@@ -111,7 +125,6 @@ class PreferencesState {
         break;
     }
   }
-
 }
 
 export const preferences = new PreferencesState();

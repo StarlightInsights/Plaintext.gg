@@ -3,24 +3,24 @@
 // branding changes: `node scripts/generate-og-image.mjs`.
 // The output PNG is committed — this is not part of the build.
 
-import { chromium } from '@playwright/test';
-import { readFile, mkdir } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { chromium } from "@playwright/test";
+import { readFile, mkdir } from "node:fs/promises";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const publicDir = join(__dirname, '..', 'public');
-const fontsDir = join(publicDir, 'fonts', 'commitmono');
+const publicDir = join(__dirname, "..", "public");
+const fontsDir = join(publicDir, "fonts", "commitmono");
 
 async function fontDataUrl(filename) {
   const bytes = await readFile(join(fontsDir, filename));
-  return 'data:font/woff2;base64,' + bytes.toString('base64');
+  return "data:font/woff2;base64," + bytes.toString("base64");
 }
 
 const [mono200, mono250, mono300] = await Promise.all([
-  fontDataUrl('CommitMono-200-Regular.woff2'),
-  fontDataUrl('CommitMono-250-Regular.woff2'),
-  fontDataUrl('CommitMono-300-Regular.woff2'),
+  fontDataUrl("CommitMono-200-Regular.woff2"),
+  fontDataUrl("CommitMono-250-Regular.woff2"),
+  fontDataUrl("CommitMono-300-Regular.woff2"),
 ]);
 
 const html = `<!doctype html>
@@ -87,12 +87,12 @@ const context = await browser.newContext({
   deviceScaleFactor: 1,
 });
 const page = await context.newPage();
-await page.setContent(html, { waitUntil: 'networkidle' });
-await page.evaluateHandle('document.fonts.ready');
+await page.setContent(html, { waitUntil: "networkidle" });
+await page.evaluateHandle("document.fonts.ready");
 
-const outPath = join(publicDir, 'og-image.png');
+const outPath = join(publicDir, "og-image.png");
 await mkdir(publicDir, { recursive: true });
-await page.screenshot({ path: outPath, type: 'png', fullPage: false });
+await page.screenshot({ path: outPath, type: "png", fullPage: false });
 await browser.close();
 
-console.log('Wrote ' + outPath);
+console.log("Wrote " + outPath);

@@ -14,10 +14,11 @@
 
   let { id, title, titleId, descId, wide = false, children }: Props = $props();
 
-  let dialogEl: HTMLDialogElement;
+  let dialogEl: HTMLDialogElement | undefined = $state(undefined);
   let triggerEl: HTMLElement | null = null;
 
   export function show(): void {
+    if (!dialogEl) return;
     triggerEl = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     dialogEl.showModal();
     const closeBtn = dialogEl.querySelector('.dialog-close');
@@ -25,7 +26,7 @@
   }
 
   export function close(): void {
-    dialogEl.close();
+    dialogEl?.close();
   }
 
   export function isOpen(): boolean {
@@ -69,7 +70,7 @@
         class="dialog-close appearance-none bg-transparent border-0 p-0 text-secondary cursor-pointer transition-colors duration-[180ms] ease-out hover:text-fg focus-visible:text-fg focus-visible:outline-2 focus-visible:outline-muted focus-visible:outline-offset-2 focus-visible:rounded-[2px]"
         aria-label="Close dialog"
         data-tooltip="close"
-        onclick={() => dialogEl.close()}
+        onclick={() => dialogEl?.close()}
       >
         <Icon name="close" size="close" />
       </button>

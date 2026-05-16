@@ -3,7 +3,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { build, files, version } from '$service-worker';
+import { build, files, version } from "$service-worker";
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -13,13 +13,13 @@ const CACHE_NAME = `plaintext-${version}`;
 // the navigation fallback '/'. Everything here is versioned via CACHE_NAME —
 // each deploy gets a fresh cache — so these URLs are safe to serve cache-first
 // without any revalidation.
-const PRECACHE_URLS = [...build, ...files, '/'];
+const PRECACHE_URLS = [...build, ...files, "/"];
 const PRECACHE_SET = new Set(PRECACHE_URLS);
 
 function isNavigationRequest(url: string): boolean {
   const pathname = new URL(url).pathname;
-  if (pathname.indexOf('.') !== -1) return false;
-  if (pathname.startsWith('/fonts/')) return false;
+  if (pathname.indexOf(".") !== -1) return false;
+  if (pathname.startsWith("/fonts/")) return false;
   return true;
 }
 
@@ -29,39 +29,44 @@ function isNavigationRequest(url: string): boolean {
  * and let the next request re-fetch from the network.
  */
 function cachePut(key: Request, response: Response): void {
-  caches.open(CACHE_NAME).then((c) => c.put(key, response)).catch(() => {});
+  caches
+    .open(CACHE_NAME)
+    .then((c) => c.put(key, response))
+    .catch(() => {});
 }
 
 function offlineFallback(): Response {
-  return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+  return new Response("Offline", { status: 503, statusText: "Service Unavailable" });
 }
 
-sw.addEventListener('install', (event) => {
+sw.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
       Promise.all(
         PRECACHE_URLS.map((url) =>
           cache.add(url).catch((err) => {
-            console.warn('[sw] precache failed for', url, err);
-          })
-        )
-      )
-    )
+            console.warn("[sw] precache failed for", url, err);
+          }),
+        ),
+      ),
+    ),
   );
-  sw.skipWaiting();
+  void sw.skipWaiting();
 });
 
-sw.addEventListener('activate', (event) => {
+sw.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((names) =>
-      Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n)))
-    )
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n))),
+      ),
   );
-  sw.clients.claim();
+  void sw.clients.claim();
 });
 
-sw.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+sw.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
 
@@ -75,8 +80,8 @@ sw.addEventListener('fetch', (event) => {
           fetch(event.request).then((response) => {
             if (response.ok) cachePut(event.request, response.clone());
             return response;
-          })
-      )
+          }),
+      ),
     );
     return;
   }
@@ -86,12 +91,12 @@ sw.addEventListener('fetch', (event) => {
   // the router reads the URL to load the right doc.
   if (isNavigationRequest(event.request.url)) {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
+      fetch(event.request, { cache: "no-cache" })
         .then((response) => {
-          if (response.ok) cachePut(new Request('/'), response.clone());
+          if (response.ok) cachePut(new Request("/"), response.clone());
           return response;
         })
-        .catch(() => caches.match('/').then((cached) => cached ?? offlineFallback()))
+        .catch(() => caches.match("/").then((cached) => cached ?? offlineFallback())),
     );
     return;
   }
@@ -103,8 +108,6 @@ sw.addEventListener('fetch', (event) => {
         if (response.ok) cachePut(event.request, response.clone());
         return response;
       })
-      .catch(() =>
-        caches.match(event.request).then((cached) => cached ?? offlineFallback())
-      )
+      .catch(() => caches.match(event.request).then((cached) => cached ?? offlineFallback())),
   );
 });

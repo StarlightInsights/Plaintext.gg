@@ -1,10 +1,10 @@
 <script lang="ts">
   import Dialog from './Dialog.svelte';
 
-  let dialog: Dialog;
+  let dialog: Dialog | undefined = $state(undefined);
 
   export function show(): void {
-    dialog.show();
+    dialog?.show();
   }
 </script>
 
