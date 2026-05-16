@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "setup": "vp install && vp exec playwright install chromium",
-    "run": "vp dev --port $CONDUCTOR_PORT --host"
+    "setup": "pnpm install",
+    "run": "pnpm exec vp dev --port $CONDUCTOR_PORT --host"
   }
 }
