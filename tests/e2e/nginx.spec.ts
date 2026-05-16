@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 /**
  * Tests that exercise the production Docker image (nginx) specifically.
- * Run them by setting TEST_DOCKER_HOSTING=1 — CI always does; `vite preview`
+ * Run them by setting TEST_DOCKER_HOSTING=1 — CI always does; `vp preview`
  * locally won't serve these headers so the suite is skipped then.
  */
 const runDockerTests = !!process.env.TEST_DOCKER_HOSTING;

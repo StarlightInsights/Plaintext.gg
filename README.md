@@ -21,39 +21,39 @@ Sometimes you just want plain text.
 
 ## Local Development
 
-Built with SvelteKit 2, Svelte 5, Tailwind v4, and Vite, using `pnpm` as the package manager and the static adapter to output a fully client-rendered SPA:
+Built with SvelteKit 2, Svelte 5, Tailwind v4, and [Vite+](https://viteplus.dev/) (which bundles Vite, Vitest, Oxlint, and Oxfmt under one `vp` CLI), using the static adapter to output a fully client-rendered SPA. Install the `vp` CLI once (`curl -fsSL https://vite.plus | bash`), then:
 
 ```sh
 git clone https://github.com/StarlightInsights/plaintext.gg.git
 cd plaintext.gg
-pnpm install
-pnpm run dev
+vp install
+vp dev
 ```
 
-This starts a dev server at `http://localhost:5173`. Run `pnpm run build` to produce the static site in `build/`, and `pnpm run preview` to serve it locally on port 3999.
+This starts a dev server at `http://localhost:5173`. Run `vp build` to produce the static site in `build/`, and `vp preview --port 3999` to serve it locally.
 
 ## Tests
 
 ```sh
-# Unit + e2e (default test command)
-pnpm test
+# Format + lint + type-aware checks (Oxfmt + Oxlint)
+vp check
 
-# Unit tests only (no dependencies needed)
-pnpm run test:unit
+# Unit tests (Vitest)
+vp test run
 
-# E2E tests only (Chromium auto-installs via postinstall)
-pnpm run test:e2e
+# Svelte-aware type checking (svelte-check)
+vp run typecheck
 
-# Type checking
-pnpm run typecheck
+# E2E tests (Playwright; Chromium auto-installs via postinstall)
+vp run test:e2e
 
-# Everything (typecheck + unit + e2e)
-pnpm run check
+# Everything: vp check + typecheck + unit + e2e
+vp run check
 ```
 
 ## Deployment
 
-The site ships as a Docker image built from the `Dockerfile`: a multi-stage build runs `pnpm run build` in a Node image, then copies the generated `build/` directory into an `nginx:alpine` image that serves it on port 80 using `nginx.conf`.
+The site ships as a Docker image built from the `Dockerfile`: a multi-stage build produces the static site with `vp build` in a Node image, then copies the generated `build/` directory into an `nginx:alpine` image that serves it on port 80 using `nginx.conf`.
 
 CI runs on every pull request and on pushes to `main`: type checking, unit tests, and an e2e suite that runs Playwright against the actual production Docker image so the real nginx config (security headers, cache rules, SPA fallback) is exercised.
 

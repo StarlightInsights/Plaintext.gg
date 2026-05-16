@@ -16,7 +16,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
-RUN pnpm run build
+RUN pnpm exec vp build
 
 # ---- Serve stage ----
 FROM nginx:alpine

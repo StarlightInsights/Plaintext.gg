@@ -40,10 +40,10 @@ jobs:
         run: pnpm exec vp check
 
       - name: Typecheck
-        run: pnpm run typecheck
+        run: pnpm exec vp run typecheck
 
       - name: Unit tests
-        run: pnpm run test:unit
+        run: pnpm exec vp run test:unit
 
       # E2E tests run against the actual production Docker image so we exercise
       # the real nginx config + static-file serving + SPA fallback.
@@ -62,7 +62,7 @@ jobs:
         env:
           # Opts the `tests/e2e/nginx.spec.ts` suite in — those tests assert
           # nginx-specific behavior (security headers, cache-control, SPA
-          # fallback status codes) that vite preview doesn't mirror.
+          # fallback status codes) that vp preview doesn't mirror.
           TEST_DOCKER_HOSTING: "1"
         run: pnpm exec vp run test:e2e
 
