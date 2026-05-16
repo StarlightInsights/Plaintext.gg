@@ -28,6 +28,7 @@ Track major version bumps separately — they're the ones likely to need code ch
 New versions deprecate or rename APIs. Don't leave call sites on the old API just because it still compiles.
 
 For each major bump:
+
 - Skim the release notes / changelog for breaking changes and deprecations.
 - Grep the codebase for usages of changed/removed APIs and migrate them.
 - Update `conductor.json` scripts if any commands or flags changed, and confirm they still run.
@@ -55,16 +56,16 @@ Watch checks with `gh pr checks <pr-number> --watch 2>&1`.
 - **All pass** → go to step 7.
 - **Any fail** → fetch failed logs with `gh run view <run-id> --log-failed`, diagnose, fix, commit with message `Fix CI: <description>`, push, and re-watch.
 
-Cap the fix loop at **5 attempts**. If CI is still red after 5, stop and report: *"CI failed after 5 fix attempts. Manual intervention required."* Include a brief list of what was tried.
+Cap the fix loop at **5 attempts**. If CI is still red after 5, stop and report: _"CI failed after 5 fix attempts. Manual intervention required."_ Include a brief list of what was tried.
 
 ## 7. Final report
 
 Present this summary to the user **and** update the PR description with it via `gh pr edit <pr-number> --body "..."`:
 
-| Category | Status |
-| - | - |
-| Dockerfile | {N} updated |
-| GitHub Actions | {N} updated |
-| package.json | {N} updated |
-| Verification | passed / failed |
-| CI | green / failed after 5 attempts |
+| Category       | Status                          |
+| -------------- | ------------------------------- |
+| Dockerfile     | {N} updated                     |
+| GitHub Actions | {N} updated                     |
+| package.json   | {N} updated                     |
+| Verification   | passed / failed                 |
+| CI             | green / failed after 5 attempts |
